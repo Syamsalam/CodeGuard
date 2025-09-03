@@ -1,0 +1,4 @@
+File1,File2,Similarity_Score,Is_Plagiarism,File1_Tokens,File2_Tokens,Common_Tokens,File1_Name,File2_Name
+data/sample_codes/sample1.py,data/sample_codes/sample2.py,0.9979,True,312,310,44,sample1.py,sample2.py
+data/sample_codes/plagiarized_sample.py,data/sample_codes/sample1.py,0.9623,True,386,312,44,plagiarized_sample.py,sample1.py
+data/sample_codes/plagiarized_sample.py,data/sample_codes/sample2.py,0.9528,True,386,310,44,plagiarized_sample.py,sample2.py

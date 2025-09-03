@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plagiarism Detection Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+        .header { background-color: #f4f4f4; padding: 20px; border-radius: 5px; }
+        .stats { display: flex; flex-wrap: wrap; gap: 20px; margin: 20px 0; }
+        .stat-card { background: #e9e9e9; padding: 15px; border-radius: 5px; flex: 1; min-width: 200px; }
+        .cases { margin-top: 30px; }
+        .case { background: #fff; border: 1px solid #ddd; margin: 10px 0; padding: 15px; border-radius: 5px; }
+        .case.high { border-left: 5px solid #ff4444; }
+        .case.medium { border-left: 5px solid #ffaa44; }
+        .case.low { border-left: 5px solid #44ff44; }
+        .similarity-score { font-size: 1.2em; font-weight: bold; }
+        .file-info { margin: 10px 0; }
+        .contributing-terms { margin-top: 10px; font-size: 0.9em; color: #666; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Plagiarism Detection Report</h1>
+        <p><strong>Generated:</strong> 2025-09-03 08:35:02</p>
+        <p><strong>Files Analyzed:</strong> 5</p>
+        <p><strong>Total Comparisons:</strong> 10</p>
+        <p><strong>Processing Time:</strong> 0.01 seconds</p>
+        <p><strong>Similarity Threshold:</strong> 0.7</p>
+        <p><strong>Plagiarism Cases Found:</strong> 3</p>
+    </div>
+    
+    <div class="stats">
+        <div class="stat-card">
+            <h3>Mean Similarity</h3>
+            <p>0.4415</p>
+        </div>
+        <div class="stat-card">
+            <h3>Median Similarity</h3>
+            <p>0.4905</p>
+        </div>
+        <div class="stat-card">
+            <h3>Max Similarity</h3>
+            <p>0.9979</p>
+        </div>
+        <div class="stat-card">
+            <h3>Standard Deviation</h3>
+            <p>0.4007</p>
+        </div>
+    </div>
+    
+    <div class="cases">
+        <h2>Plagiarism Cases</h2>
+        
+        <div class="case high">
+            <h3>Case #1</h3>
+            <div class="similarity-score">Similarity: 0.9979</div>
+            <div class="file-info">
+                <p><strong>File 1:</strong> sample1.py (312 tokens)</p>
+                <p><strong>File 2:</strong> sample2.py (310 tokens)</p>
+                <p><strong>Common Tokens:</strong> 44</p>
+            </div>
+                <div class="contributing-terms"><strong>Key Contributing Terms:</strong> NODE_integer, NODE_:, NODE_call, NODE_argument_list, NODE_ERROR</div></div>
+        <div class="case high">
+            <h3>Case #2</h3>
+            <div class="similarity-score">Similarity: 0.9623</div>
+            <div class="file-info">
+                <p><strong>File 1:</strong> plagiarized_sample.py (386 tokens)</p>
+                <p><strong>File 2:</strong> sample1.py (312 tokens)</p>
+                <p><strong>Common Tokens:</strong> 44</p>
+            </div>
+                <div class="contributing-terms"><strong>Key Contributing Terms:</strong> NODE_integer, NODE_:, NODE_argument_list, NODE_call, NODE_ERROR</div></div>
+        <div class="case high">
+            <h3>Case #3</h3>
+            <div class="similarity-score">Similarity: 0.9528</div>
+            <div class="file-info">
+                <p><strong>File 1:</strong> plagiarized_sample.py (386 tokens)</p>
+                <p><strong>File 2:</strong> sample2.py (310 tokens)</p>
+                <p><strong>Common Tokens:</strong> 44</p>
+            </div>
+                <div class="contributing-terms"><strong>Key Contributing Terms:</strong> NODE_integer, NODE_:, NODE_argument_list, NODE_call, NODE_ERROR</div></div>
+    </div>
+    
+    <h2>Analyzed Files</h2>
+    <table>
+        <tr><th>#</th><th>File Path</th><th>File Name</th></tr>
+        <tr><td>1</td><td>data/sample_codes/different.py</td><td>different.py</td></tr><tr><td>2</td><td>data/sample_codes/plagiarized_sample.py</td><td>plagiarized_sample.py</td></tr><tr><td>3</td><td>data/sample_codes/sample1.py</td><td>sample1.py</td></tr><tr><td>4</td><td>data/sample_codes/sample2.py</td><td>sample2.py</td></tr><tr><td>5</td><td>data/sample_codes/sample3.js</td><td>sample3.js</td></tr>
+    </table>
+</body>
+</html>
+        

@@ -1,0 +1,164 @@
+{
+  "analysis_results": {
+    "files_analyzed": 5,
+    "total_comparisons": 10,
+    "plagiarism_cases": 3,
+    "processing_time": 0.01,
+    "threshold": 0.7
+  },
+  "similarity_statistics": {
+    "mean": 0.44154527274677446,
+    "median": 0.49045241280991403,
+    "std": 0.4006652221636204,
+    "min": 0.0018044813031717994,
+    "max": 0.997879264229492,
+    "q25": 0.007062428726742379,
+    "q75": 0.8380085494278959
+  },
+  "plagiarism_cases": [
+    {
+      "case_number": 1,
+      "file1_name": "sample1.py",
+      "file2_name": "sample2.py",
+      "similarity_score": 0.9979,
+      "is_plagiarism": true,
+      "file1_tokens": 312,
+      "file2_tokens": 310,
+      "common_tokens": 44,
+      "overlap_percentage": 14.1,
+      "contributing_terms": [
+        {
+          "term": "NODE_integer",
+          "contribution": 0.1934
+        },
+        {
+          "term": "NODE_:",
+          "contribution": 0.1384
+        },
+        {
+          "term": "NODE_call",
+          "contribution": 0.1384
+        },
+        {
+          "term": "NODE_argument_list",
+          "contribution": 0.1384
+        },
+        {
+          "term": "NODE_ERROR",
+          "contribution": 0.0721
+        }
+      ]
+    },
+    {
+      "case_number": 2,
+      "file1_name": "plagiarized_sample.py",
+      "file2_name": "sample1.py",
+      "similarity_score": 0.9623,
+      "is_plagiarism": true,
+      "file1_tokens": 386,
+      "file2_tokens": 312,
+      "common_tokens": 44,
+      "overlap_percentage": 11.4,
+      "contributing_terms": [
+        {
+          "term": "NODE_integer",
+          "contribution": 0.162
+        },
+        {
+          "term": "NODE_:",
+          "contribution": 0.137
+        },
+        {
+          "term": "NODE_argument_list",
+          "contribution": 0.1265
+        },
+        {
+          "term": "NODE_call",
+          "contribution": 0.1265
+        },
+        {
+          "term": "NODE_ERROR",
+          "contribution": 0.1208
+        }
+      ]
+    },
+    {
+      "case_number": 3,
+      "file1_name": "plagiarized_sample.py",
+      "file2_name": "sample2.py",
+      "similarity_score": 0.9528,
+      "is_plagiarism": true,
+      "file1_tokens": 386,
+      "file2_tokens": 310,
+      "common_tokens": 44,
+      "overlap_percentage": 11.4,
+      "contributing_terms": [
+        {
+          "term": "NODE_integer",
+          "contribution": 0.165
+        },
+        {
+          "term": "NODE_:",
+          "contribution": 0.1396
+        },
+        {
+          "term": "NODE_argument_list",
+          "contribution": 0.1288
+        },
+        {
+          "term": "NODE_call",
+          "contribution": 0.1288
+        },
+        {
+          "term": "NODE_ERROR",
+          "contribution": 0.0957
+        }
+      ]
+    }
+  ],
+  "similarity_matrix": [
+    [
+      1.0,
+      0.4884387488096551,
+      0.492466076810173,
+      0.4937012653213697,
+      0.02178670946698893
+    ],
+    [
+      0.4884387488096551,
+      1.0,
+      0.9623289439500334,
+      0.9527776441300713,
+      0.0018044813031717994
+    ],
+    [
+      0.492466076810173,
+      0.9623289439500334,
+      1.0,
+      0.997879264229492,
+      0.002115258300128941
+    ],
+    [
+      0.4937012653213697,
+      0.9527776441300713,
+      0.997879264229492,
+      1.0,
+      0.002154335146660195
+    ],
+    [
+      0.02178670946698893,
+      0.0018044813031717994,
+      0.002115258300128941,
+      0.002154335146660195,
+      1.0
+    ]
+  ],
+  "file_names": [
+    "different.py",
+    "plagiarized_sample.py",
+    "sample1.py",
+    "sample2.py",
+    "sample3.js"
+  ],
+  "timestamp": "2024-demo"
+}

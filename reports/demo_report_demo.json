@@ -1,0 +1,169 @@
+{
+  "metadata": {
+    "generated_at": "2025-09-03T08:35:02.357501",
+    "total_files": 5,
+    "total_comparisons": 10,
+    "processing_time": 0.012507200241088867,
+    "threshold": 0.7,
+    "plagiarism_cases_count": 3
+  },
+  "statistics": {
+    "mean": 0.44154527274677446,
+    "median": 0.49045241280991403,
+    "std": 0.4006652221636204,
+    "min": 0.0018044813031717994,
+    "max": 0.997879264229492,
+    "q25": 0.007062428726742379,
+    "q75": 0.8380085494278959
+  },
+  "file_paths": [
+    "data/sample_codes/different.py",
+    "data/sample_codes/plagiarized_sample.py",
+    "data/sample_codes/sample1.py",
+    "data/sample_codes/sample2.py",
+    "data/sample_codes/sample3.js"
+  ],
+  "plagiarism_cases": [
+    {
+      "file1_path": "data/sample_codes/sample1.py",
+      "file2_path": "data/sample_codes/sample2.py",
+      "similarity_score": 0.997879264229492,
+      "is_plagiarism": true,
+      "file1_tokens": 312,
+      "file2_tokens": 310,
+      "common_tokens": 44,
+      "explanation": {
+        "similarity": 0.9978792642294918,
+        "contributing_terms": [
+          {
+            "term": "NODE_integer",
+            "contribution": 0.1933597536778212,
+            "tfidf1": 0.4357206196992179,
+            "tfidf2": 0.44377003275929267
+          },
+          {
+            "term": "NODE_:",
+            "contribution": 0.1384410070711027,
+            "tfidf1": 0.3686866782070305,
+            "tfidf2": 0.3754977200270937
+          },
+          {
+            "term": "NODE_call",
+            "contribution": 0.1384410070711027,
+            "tfidf1": 0.3686866782070305,
+            "tfidf2": 0.3754977200270937
+          },
+          {
+            "term": "NODE_argument_list",
+            "contribution": 0.1384410070711027,
+            "tfidf1": 0.3686866782070305,
+            "tfidf2": 0.3754977200270937
+          },
+          {
+            "term": "NODE_ERROR",
+            "contribution": 0.07208085492131795,
+            "tfidf1": 0.30165273671484316,
+            "tfidf2": 0.23895309456269598
+          }
+        ],
+        "doc1_length": 312,
+        "doc2_length": 310,
+        "common_terms": 26
+      }
+    },
+    {
+      "file1_path": "data/sample_codes/plagiarized_sample.py",
+      "file2_path": "data/sample_codes/sample1.py",
+      "similarity_score": 0.9623289439500334,
+      "is_plagiarism": true,
+      "file1_tokens": 386,
+      "file2_tokens": 312,
+      "common_tokens": 44,
+      "explanation": {
+        "similarity": 0.9623289439500335,
+        "contributing_terms": [
+          {
+            "term": "NODE_integer",
+            "contribution": 0.16195904376273326,
+            "tfidf1": 0.3717038773022382,
+            "tfidf2": 0.4357206196992179
+          },
+          {
+            "term": "NODE_:",
+            "contribution": 0.13704226779923584,
+            "tfidf1": 0.3717038773022382,
+            "tfidf2": 0.3686866782070305
+          },
+          {
+            "term": "NODE_argument_list",
+            "contribution": 0.1265005548916023,
+            "tfidf1": 0.3431112713559122,
+            "tfidf2": 0.3686866782070305
+          },
+          {
+            "term": "NODE_call",
+            "contribution": 0.1265005548916023,
+            "tfidf1": 0.3431112713559122,
+            "tfidf2": 0.3686866782070305
+          },
+          {
+            "term": "NODE_ERROR",
+            "contribution": 0.12075052966925674,
+            "tfidf1": 0.40029648324856415,
+            "tfidf2": 0.30165273671484316
+          }
+        ],
+        "doc1_length": 386,
+        "doc2_length": 312,
+        "common_terms": 26
+      }
+    },
+    {
+      "file1_path": "data/sample_codes/plagiarized_sample.py",
+      "file2_path": "data/sample_codes/sample2.py",
+      "similarity_score": 0.9527776441300713,
+      "is_plagiarism": true,
+      "file1_tokens": 386,
+      "file2_tokens": 310,
+      "common_tokens": 44,
+      "explanation": {
+        "similarity": 0.9527776441300714,
+        "contributing_terms": [
+          {
+            "term": "NODE_integer",
+            "contribution": 0.16495104180717035,
+            "tfidf1": 0.3717038773022382,
+            "tfidf2": 0.44377003275929267
+          },
+          {
+            "term": "NODE_:",
+            "contribution": 0.13957395845222104,
+            "tfidf1": 0.3717038773022382,
+            "tfidf2": 0.3754977200270937
+          },
+          {
+            "term": "NODE_argument_list",
+            "contribution": 0.1288375001097425,
+            "tfidf1": 0.3431112713559122,
+            "tfidf2": 0.3754977200270937
+          },
+          {
+            "term": "NODE_call",
+            "contribution": 0.1288375001097425,
+            "tfidf1": 0.3431112713559122,
+            "tfidf2": 0.3754977200270937
+          },
+          {
+            "term": "NODE_ERROR",
+            "contribution": 0.0956520834148088,
+            "tfidf1": 0.40029648324856415,
+            "tfidf2": 0.23895309456269598
+          }
+        ],
+        "doc1_length": 386,
+        "doc2_length": 310,
+        "common_terms": 26
+      }
+    }
+  ]
+}
