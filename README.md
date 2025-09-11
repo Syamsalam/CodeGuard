@@ -76,6 +76,37 @@ CodeGuard/
 
 ## 📖 Usage
 
+### Web Interface: GitHub Repository Plagiarism Check
+
+You can analyze all Python files in a public GitHub repository directly from the web UI:
+
+1. Start the FastAPI server:
+    ```bash
+    python api_enhanced.py
+    ```
+2. Open the web interface in your browser (usually at http://localhost:8000).
+3. Go to the **GitHub Repo** tab.
+4. Enter the public GitHub repository URL (e.g., `https://github.com/pallets/flask`).
+5. Click **Mulai Analisis Repository**.
+6. Wait for the analysis to complete. Results will be shown in the Results section, including a table of file pairs, similarity scores, and plagiarism status.
+
+**Note:** Only Python files (`.py`) are currently analyzed from the repository. Support for other languages can be added as needed.
+
+#### API Endpoint
+
+You can also trigger analysis via API:
+
+```http
+POST /analyze/github
+Form fields:
+   github_url: <public GitHub repo URL>
+   threshold: <similarity threshold, optional>
+```
+
+The response will include an `analysis_id`. Poll `/status/{analysis_id}` to get the results when processing is complete.
+
+---
+
 ### Command Line Interface
 
 **Analyze a directory of source files:**

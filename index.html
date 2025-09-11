@@ -293,6 +293,11 @@
                         <i class="fas fa-keyboard"></i> Manual Input
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="github-tab" data-bs-toggle="pill" href="#github">
+                        <i class="fab fa-github"></i> GitHub Repo
+                    </a>
+                </li>
             </ul>
 
             <!-- Demo Content -->
@@ -336,7 +341,7 @@
                             <h6>Sample 1: Original Code</h6>
                             <div class="code-sample">
 <pre><code class="language-python">def factorial(n):
-    if n <= 1:
+    if n &lt;= 1:
         return 1
     return n * factorial(n - 1)
 
@@ -349,7 +354,7 @@ class Calculator:
                             <h6>Sample 2: Similar Code (Renamed)</h6>
                             <div class="code-sample">
 <pre><code class="language-python">def compute_factorial(num):
-    if num <= 1:
+    if num &lt;= 1:
         return 1
     return num * compute_factorial(num - 1)
 
@@ -396,6 +401,23 @@ class MathCalculator:
                             <i class="fas fa-balance-scale"></i> Compare Code
                         </button>
                     </div>
+                </div>
+
+                <!-- GitHub Repository Tab -->
+                <div class="tab-pane fade" id="github">
+                    <h5><i class="fab fa-github"></i> Analyze GitHub Repository</h5>
+                    <p>Masukkan URL repository GitHub (public) untuk dianalisis. Sistem akan mengambil file Python dan melakukan perbandingan internal.</p>
+                    <div class="mb-3">
+                        <label class="form-label">GitHub Repository URL</label>
+                        <input type="text" class="form-control" id="githubUrl" placeholder="https://github.com/owner/repo">
+                        <small class="text-muted">Hanya repository publik. Saat ini fokus pada file Python (.py).</small>
+                    </div>
+                    <div class="mb-3">
+                        <button class="btn btn-dark" onclick="analyzeGithubRepo()">
+                            <i class="fas fa-search"></i> Mulai Analisis Repository
+                        </button>
+                    </div>
+                    <div id="githubStatusArea"></div>
                 </div>
             </div>
         </div>
@@ -763,18 +785,31 @@ class MathCalculator:
                 alert('Please upload at least 2 files for comparison.');
                 return;
             }
-            
             showAnalysisProgress();
-            
-            // Simulate analysis
-            setTimeout(() => {
-                showResults({
-                    filesCount: files.length,
-                    comparisons: files.length * (files.length - 1) / 2,
-                    plagiarismCount: Math.floor(Math.random() * 3),
-                    processingTime: (Math.random() * 5 + 1).toFixed(1)
-                });
-            }, 3000);
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                formData.append('files', files[i]);
+            }
+            // Optionally add threshold and minTokens if needed
+            const threshold = document.getElementById('thresholdRange').value;
+            const minTokens = document.getElementById('minTokens').value;
+            formData.append('threshold', threshold);
+            formData.append('min_tokens', minTokens);
+
+            fetch('/analyze/compare', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Gagal menganalisis file.');
+                return response.json();
+            })
+            .then(data => {
+                showResults(data);
+            })
+            .catch(err => {
+                alert('Terjadi kesalahan saat analisis: ' + err.message);
+            });
         }
 
         // Analyze sample code
@@ -819,6 +854,69 @@ class MathCalculator:
             }, 1500);
         }
 
+        // Analyze GitHub repository
+        function analyzeGithubRepo() {
+            const url = document.getElementById('githubUrl').value.trim();
+            if (!url) {
+                alert('Masukkan URL repository GitHub.');
+                return;
+            }
+            if (!url.startsWith('https://github.com/')) {
+                alert('URL harus diawali dengan https://github.com/');
+                return;
+            }
+            const threshold = document.getElementById('thresholdRange').value;
+            const fd = new FormData();
+            fd.append('github_url', url);
+            fd.append('threshold', threshold);
+            const statusArea = document.getElementById('githubStatusArea');
+            statusArea.innerHTML = `<div class="alert alert-info"><div class="d-flex align-items-center"><div class="spinner-border spinner-border-sm me-2"></div><div><strong>Memulai analisis...</strong><div class='small'>Mengunduh repository dan mengekstraksi file...</div></div></div></div>`;
+            fetch('/analyze/github', { method: 'POST', body: fd })
+                .then(r => { if (!r.ok) throw new Error('Gagal memulai analisis'); return r.json(); })
+                .then(resp => {
+                    if (resp.analysis_id) {
+                        statusArea.innerHTML = `<div class='alert alert-info'><strong>Analisis dimulai.</strong> ID: ${resp.analysis_id}<br><span class='small'>Polling status...</span></div>`;
+                        pollGithubStatus(resp.analysis_id, Date.now());
+                    } else {
+                        statusArea.innerHTML = `<div class='alert alert-danger'>Respon tidak valid.</div>`;
+                    }
+                })
+                .catch(e => {
+                    statusArea.innerHTML = `<div class='alert alert-danger'>Error: ${e.message}</div>`;
+                });
+        }
+
+        function pollGithubStatus(analysisId, startTs) {
+            const statusArea = document.getElementById('githubStatusArea');
+            fetch(`/status/${analysisId}`)
+                .then(r => { if (!r.ok) throw new Error('Status tidak ditemukan'); return r.json(); })
+                .then(stat => {
+                    if (stat.status === 'processing') {
+                        statusArea.innerHTML = `<div class='alert alert-info'><div class='d-flex align-items-center'><div class='spinner-border spinner-border-sm me-2'></div><div><strong>Memproses...</strong><div class='small'>Menganalisis ${stat.total_files || '?'} file (jika sudah terunduh)...</div></div></div></div>`;
+                        setTimeout(() => pollGithubStatus(analysisId, startTs), 2000);
+                    } else if (stat.status === 'completed') {
+                        statusArea.innerHTML = `<div class='alert alert-success'><strong>Analisis selesai.</strong> Menampilkan hasil...</div>`;
+                        // Bentuk data sesuai showResults
+                        const processingTime = ((Date.now() - startTs) / 1000).toFixed(2);
+                        const mapped = {
+                            total_files: stat.total_files || 0,
+                            total_comparisons: stat.total_comparisons || 0,
+                            plagiarism_cases: stat.plagiarism_cases || 0,
+                            all_comparisons: stat.all_comparisons || stat.results || [],
+                            duration: processingTime
+                        };
+                        showResults(mapped);
+                    } else if (stat.status === 'error') {
+                        statusArea.innerHTML = `<div class='alert alert-danger'><strong>Error:</strong> ${stat.error || 'Terjadi kesalahan'}</div>`;
+                    } else {
+                        statusArea.innerHTML = `<div class='alert alert-warning'>Status: ${stat.status}</div>`;
+                    }
+                })
+                .catch(e => {
+                    statusArea.innerHTML = `<div class='alert alert-danger'>Polling gagal: ${e.message}</div>`;
+                });
+        }
+
         // Simple similarity estimation for demo
         function estimateSimilarity(code1, code2) {
             const words1 = code1.toLowerCase().split(/\W+/).filter(w => w.length > 2);
@@ -856,47 +954,141 @@ class MathCalculator:
             }, 4000);
         }
 
+        // Global Chart.js instance
+        let similarityChartInstance = null;
+
         // Show results
         function showResults(data) {
-            // Hide sample results
+            // Normalisasi kunci dari backend (multi-file) ke struktur frontend lama
+            const mapped = {
+                filesCount: data.filesCount ?? data.total_files ?? data.totalFiles ?? 0,
+                comparisons: data.comparisons ?? data.total_comparisons ?? data.totalComparisons ?? (data.comparisonsDetail ? data.comparisonsDetail.length : 0),
+                plagiarismCount: data.plagiarismCount ?? data.plagiarism_cases ?? data.plagiarismCases ?? 0,
+                processingTime: data.processingTime ?? data.duration ?? data.processing_time ?? '0',
+                comparisonsDetail: data.comparisonsDetail ?? data.all_comparisons ?? data.results ?? [],
+                similarityScores: data.similarityScores ?? data.similarity_scores ?? undefined,
+                manualSimilarity: data.manualSimilarity
+            };
+            data = mapped;
+            // Sembunyikan hasil sampel
             document.getElementById('sampleResults').classList.add('d-none');
-            
-            // Show results container
+            // Tampilkan kontainer hasil
             const container = document.getElementById('resultsContainer');
             container.classList.remove('d-none');
-            
-            // Update metrics
+            // Update metrik
             document.getElementById('filesCount').textContent = data.filesCount;
             document.getElementById('comparisons').textContent = data.comparisons;
             document.getElementById('plagiarismCount').textContent = data.plagiarismCount;
-            document.getElementById('processingTime').textContent = data.processingTime + 's';
-            
-            // Update results section
+            document.getElementById('processingTime').textContent = data.processingTime + ' detik';
+            // Update bagian hasil deteksi
             const resultsDiv = document.getElementById('detectionResults');
-            
-            if (data.plagiarismCount > 0) {
-                const similarity = data.manualSimilarity || 0.89;
-                resultsDiv.innerHTML = `
-                    <div class="alert alert-danger">
-                        <h6><i class="fas fa-exclamation-triangle"></i> Plagiarism Detected!</h6>
-                        <p><strong>Similarity Score:</strong> ${(similarity * 100).toFixed(1)}%</p>
-                        <div class="progress mt-2">
-                            <div class="progress-bar bg-danger" style="width: ${similarity * 100}%"></div>
-                        </div>
-                    </div>
-                `;
+            // Tabel perbandingan file
+            let tableHTML = `<div class="table-responsive"><table class="table table-bordered text-center">
+        <thead class="table-primary">
+            <tr>
+                <th>Berkas 1</th>
+                <th>Berkas 2</th>
+                <th>Skor Kemiripan</th>
+                <th>Status</th>
+                <th>Bagian Plagiat</th>
+            </tr>
+        </thead>
+        <tbody>`;
+    let hasPlagiarism = false;
+    if (data.comparisonsDetail && data.comparisonsDetail.length > 0) {
+        let hasModerate = false; // kemiripan menengah 50-70%
+        data.comparisonsDetail.forEach(pair => {
+            const simVal = pair.similarity ?? pair.similarity_score ?? 0;
+            const skor = (simVal * 100).toFixed(1) + '%';
+            let statusBadge;
+            if (simVal >= 0.7) {
+                statusBadge = '<span class="badge bg-danger">Plagiat</span>';
+                hasPlagiarism = true;
+            } else if (simVal >= 0.5) {
+                statusBadge = '<span class="badge bg-warning text-dark">Mirip</span>';
+                hasModerate = true;
             } else {
-                resultsDiv.innerHTML = `
-                    <div class="alert alert-success">
-                        <h6><i class="fas fa-check-circle"></i> No Plagiarism Detected</h6>
-                        <p>All similarities are below the threshold.</p>
-                    </div>
-                `;
+                statusBadge = '<span class="badge bg-success">Aman</span>';
             }
-            
-            // Scroll to results
-            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+            let frag = '-';
+            if (pair.plagiarizedFragment) {
+                frag = `<pre style='text-align:left;max-width:350px;overflow-x:auto;background:#f8d7da;padding:4px;border-radius:4px;'>${pair.plagiarizedFragment}</pre>`;
+            }
+            tableHTML += `<tr>
+                <td>${pair.file1}</td>
+                <td>${pair.file2}</td>
+                <td>${skor}</td>
+                <td>${statusBadge}</td>
+                <td>${frag}</td>
+            </tr>`;
+        });
+        // Update summary depending on moderate if no plagiarism
+        window._lastHasModerate = (typeof hasModerate !== 'undefined') ? hasModerate : false;
+    } else {
+        tableHTML += `<tr><td colspan="5">Tidak ada data perbandingan.</td></tr>`;
+    }
+    tableHTML += '</tbody></table></div>';
+    // Ringkasan status
+    let summaryHTML = '';
+    if (hasPlagiarism) {
+        summaryHTML = `<div class="alert alert-danger"><h6><i class="fas fa-exclamation-triangle"></i> Plagiarisme Terdeteksi!</h6><p>Beberapa pasangan berkas memiliki kemiripan di atas ambang batas (≥70%).</p></div>`;
+    } else if (window._lastHasModerate) {
+        summaryHTML = `<div class="alert alert-warning"><h6><i class="fas fa-eye"></i> Kemiripan Menengah</h6><p>Ada pasangan berkas dengan kemiripan 50%-69%. Periksa manual jika diperlukan.</p></div>`;
+    } else {
+        summaryHTML = `<div class="alert alert-success"><h6><i class="fas fa-check-circle"></i> Tidak Ada Plagiarisme</h6><p>Tidak ditemukan kemiripan signifikan (≥50%).</p></div>`;
+    }
+    resultsDiv.innerHTML = summaryHTML + tableHTML;
+    // Update distribusi kemiripan
+    let scores = [];
+    if (data.comparisonsDetail && data.comparisonsDetail.length) {
+        scores = data.comparisonsDetail.map(p => p.similarity ?? p.similarity_score ?? 0);
+    } else if (data.similarityScores) {
+        scores = data.similarityScores;
+    } else if (data.manualSimilarity) {
+        scores = [data.manualSimilarity];
+    } else {
+        scores = [0.89]; // fallback demo
+    }
+    const bins = [0, 0.2, 0.4, 0.6, 0.8, 1.0];
+    const binLabels = ['0-20%', '21-40%', '41-60%', '61-80%', '81-100%'];
+    const binCounts = [0, 0, 0, 0, 0];
+    scores.forEach(s => {
+        if (s <= 0.2) binCounts[0]++;
+        else if (s <= 0.4) binCounts[1]++;
+        else if (s <= 0.6) binCounts[2]++;
+        else if (s <= 0.8) binCounts[3]++;
+        else binCounts[4]++;
+    });
+    const ctx = document.getElementById('similarityChart').getContext('2d');
+    if (window.similarityChartInstance) {
+        window.similarityChartInstance.destroy();
+    }
+    window.similarityChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: binLabels,
+            datasets: [{
+                label: 'Distribusi Kemiripan',
+                data: binCounts,
+                backgroundColor: [
+                    '#28a745', '#ffc107', '#17a2b8', '#fd7e14', '#dc3545'
+                ]
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { display: false },
+                title: { display: true, text: 'Distribusi Skor Kemiripan' }
+            },
+            scales: {
+                y: { beginAtZero: true, title: { display: true, text: 'Jumlah' } },
+                x: { title: { display: true, text: 'Rentang Skor (%)' } }
+            }
         }
+    });
+    // Scroll ke hasil
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+}
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
@@ -905,6 +1097,38 @@ class MathCalculator:
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl);
             });
+            // Ganti label UI
+            document.querySelectorAll('h2, h5, h6, label, button, th, td, p, small, strong, .nav-link, .btn, .alert, .form-label').forEach(el => {
+                if (el.textContent.includes('Similarity Distribution')) el.textContent = 'Distribusi Kemiripan';
+                if (el.textContent.includes('Detection Results')) el.textContent = 'Hasil Deteksi';
+                if (el.textContent.includes('Analysis Results')) el.textContent = 'Hasil Analisis';
+                if (el.textContent.includes('No Plagiarism Detected')) el.textContent = 'Tidak Ada Plagiarisme';
+                if (el.textContent.includes('Plagiarism Detected!')) el.textContent = 'Plagiarisme Terdeteksi!';
+                if (el.textContent.includes('All similarities are below the threshold.')) el.textContent = 'Semua skor kemiripan di bawah ambang batas.';
+                if (el.textContent.includes('Similarity Score:')) el.textContent = 'Skor Kemiripan:';
+                if (el.textContent.includes('files for comparison')) el.textContent = 'file untuk dibandingkan';
+                if (el.textContent.includes('Processing Time')) el.textContent = 'Waktu Proses';
+                if (el.textContent.includes('Compare')) el.textContent = 'Bandingkan';
+                if (el.textContent.includes('Upload')) el.textContent = 'Unggah';
+                if (el.textContent.includes('Manual')) el.textContent = 'Manual';
+                if (el.textContent.includes('Sample')) el.textContent = 'Contoh';
+                if (el.textContent.includes('Start Demo')) el.textContent = 'Mulai Demo';
+                if (el.textContent.includes('Analysis')) el.textContent = 'Analisis';
+                if (el.textContent.includes('Results')) el.textContent = 'Hasil';
+                if (el.textContent.includes('Threshold')) el.textContent = 'Ambang Batas';
+                if (el.textContent.includes('File')) el.textContent = 'Berkas';
+                if (el.textContent.includes('Processing')) el.textContent = 'Memproses';
+                if (el.textContent.includes('seconds')) el.textContent = 'detik';
+                if (el.textContent.includes('Upload at least 2 files')) el.textContent = 'Unggah minimal 2 berkas';
+                if (el.textContent.includes('Please enter code in both text areas.')) el.textContent = 'Masukkan kode pada kedua area.';
+            });
+            // Expose functions globally (beberapa browser strict mode butuh ini)
+            window.analyzeUploadedFiles = analyzeUploadedFiles;
+            window.analyzeSampleCode = analyzeSampleCode;
+            window.compareManualCode = compareManualCode;
+            window.analyzeGithubRepo = analyzeGithubRepo;
+            window.startDemo = startDemo;
+            window.updateThreshold = updateThreshold;
         });
 
         // Launch Streamlit interface

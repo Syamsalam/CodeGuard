@@ -5,6 +5,22 @@ Saya sedang mengerjakan penelitian skripsi dengan judul "Implementasi Metode TF-
 
 ## Spesifikasi Sistem yang Dibutuhkan
 
+### Fitur Tambahan: Analisis Plagiarisme dari Repository GitHub
+
+Sistem kini mendukung analisis plagiarisme langsung dari repository GitHub publik (khusus file Python):
+
+- **UI Web:**
+  1. Buka tab "GitHub Repo" di antarmuka web.
+  2. Masukkan URL repository GitHub publik (misal: `https://github.com/pallets/flask`).
+  3. Klik "Mulai Analisis Repository".
+  4. Sistem akan mengunduh file Python, melakukan analisis, dan menampilkan hasil tabel kemiripan serta status plagiarisme.
+
+- **API:**
+  - Endpoint: `POST /analyze/github` (form field: `github_url` dan opsional `threshold`)
+  - Poll hasil di endpoint: `/status/{analysis_id}`
+
+**Catatan:** Saat ini hanya file `.py` yang dianalisis dari repo GitHub. Dukungan bahasa lain dapat ditambah sesuai kebutuhan.
+
 ### 1. Arsitektur Sistem
 ```
 Input: Direktori source code files
