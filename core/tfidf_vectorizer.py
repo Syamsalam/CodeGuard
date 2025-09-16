@@ -149,15 +149,14 @@ class TFIDFVectorizer:
         self.feature_names_ = feature_names
     
     def _calculate_idf_weights(self, doc_frequencies: Dict[str, int]) -> None:
-        """Calculate IDF weights for tokens in vocabulary"""
+        """Calculate IDF weights for tokens in vocabulary with smoothing"""
         idf_weights = {}
-        
+        N = self.n_documents_
         for token in self.vocabulary_.keys():
             df = doc_frequencies[token]
-            # IDF = log(N / df) where N is total number of documents
-            idf = math.log(self.n_documents_ / df)
+            # Smoothing: IDF = log((N+1)/(df+1)) + 1
+            idf = math.log((N + 1) / (df + 1)) + 1
             idf_weights[token] = idf
-        
         self.idf_weights_ = idf_weights
     
     def _calculate_tf_scores(self, document: List[str]) -> Dict[str, float]:
