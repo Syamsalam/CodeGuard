@@ -202,6 +202,17 @@
                 left: 20px;
             }
         }
+        /* Matrix custom classes */
+        .cg-matrix-container { background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:14px; box-shadow:0 2px 6px rgba(0,0,0,0.05); }
+        .cg-matrix-title { font-size:0.95rem; font-weight:600; color:#1e293b; display:flex; align-items:center; gap:6px; }
+        .cg-toolbar { display:flex; gap:8px; }
+        .cg-btn-icon { background:#f1f5f9; border:1px solid #cbd5e1; padding:4px 10px; font-size:0.7rem; border-radius:4px; cursor:pointer; display:inline-flex; align-items:center; gap:4px; }
+        .cg-btn-icon:hover { background:#e2e8f0; }
+        .cg-matrix-wrapper { max-height:420px; overflow:auto; }
+        .cg-matrix-table thead th { position:sticky; top:0; background:#0d6efd; color:#fff; z-index:2; }
+        .cg-matrix-table tbody th { background:#f8fafc; }
+        .cg-section-collapsed { display:none; }
+        .cg-note { font-size:0.65rem; color:#64748b; margin-top:4px; }
     </style>
 </head>
 <body>
@@ -216,7 +227,6 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="#demo">Demo</a></li>
                     <li class="nav-item"><a class="nav-link" href="#process">Process</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
                     <li class="nav-item"><a class="nav-link" href="#results">Results</a></li>
                 </ul>
             </div>
@@ -231,30 +241,29 @@
                 CodeGuard
             </h1>
             <p class="lead mb-4">
-                Advanced Source Code Plagiarism Detection using AST Analysis, TF-IDF Vectorization, 
-                and Cosine Similarity
+                Deteksi Plagiarisme Kode Sumber Lanjutan menggunakan Analisis AST, Vektorisasi TF-IDF, dan Cosine Similarity
             </p>
             <div class="row mt-4">
                 <div class="col-md-4">
                     <div class="feature-icon">
                         <i class="fas fa-code"></i>
                     </div>
-                    <h5>AST-based Analysis</h5>
-                    <p>Structural code analysis beyond simple text comparison</p>
+                    <h5>Analisis Berbasis AST</h5>
+                    <p>Analisis kode struktural melampaui perbandingan teks sederhana</p>
                 </div>
                 <div class="col-md-4">
                     <div class="feature-icon">
                         <i class="fas fa-brain"></i>
                     </div>
                     <h5>Machine Learning</h5>
-                    <p>TF-IDF vectorization with cosine similarity</p>
+                    <p>Vektorisasi TF-IDF dan cosine similarity</p>
                 </div>
                 <div class="col-md-4">
                     <div class="feature-icon">
                         <i class="fas fa-chart-line"></i>
                     </div>
-                    <h5>Comprehensive Reports</h5>
-                    <p>Detailed analysis with visualizations</p>
+                    <h5>Laporan Komprehensif</h5>
+                    <p>Analisis terperinci dengan visualisasi</p>
                 </div>
             </div>
             <!-- <div class="mt-4">
@@ -273,7 +282,7 @@
         <div class="demo-section">
             <h2 class="text-center mb-4">
                 <i class="fas fa-microscope"></i> 
-                Interactive Demo
+                Demo Interaktif
             </h2>
             
             <!-- Demo Navigation -->
@@ -432,6 +441,12 @@ class MathCalculator:
                             <input type="number" class="form-control" id="githubMinTokens" value="10" min="1">
                         </div>
                     </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="skipMatrices">
+                        <label class="form-check-label" for="skipMatrices">
+                            Skip matrices (lebih cepat, tidak kirim similarity & TF-IDF matrix besar)
+                        </label>
+                    </div>
                     <div class="mb-3">
                         <button class="btn btn-dark" onclick="analyzeGithubRepo()">
                             <i class="fas fa-search"></i> Mulai Analisis Repository
@@ -448,7 +463,7 @@ class MathCalculator:
         <div class="demo-section">
             <h2 class="text-center mb-5">
                 <i class="fas fa-cogs"></i> 
-                Detection Process
+                Proses Deteksi
             </h2>
             
             <div class="timeline">
@@ -461,10 +476,10 @@ class MathCalculator:
                         </div>
                         <div class="p-3">
                             <p><strong>Input:</strong> Source code files (.py, .js)</p>
-                            <p><strong>Process:</strong> Parse code into Abstract Syntax Tree and extract structural tokens</p>
-                            <p><strong>Output:</strong> Token sequences representing code structure</p>
+                            <p><strong>Process:</strong> Parsing kode ke dalam Pohon Sintaks Abstrak dan ekstrak token struktural</p>
+                            <p><strong>Output:</strong> Urutan token yang mewakili struktur kode</p>
                             <div class="code-sample">
-                                <strong>Example tokens:</strong><br>
+                                <strong>Contoh tokens:</strong><br>
                                 ['NODE_FunctionDef', 'FUNC_DEF', 'NODE_If', 'NODE_Compare', 'NODE_Return', ...]
                             </div>
                         </div>
@@ -480,8 +495,8 @@ class MathCalculator:
                         </div>
                         <div class="p-3">
                             <p><strong>Formula:</strong> tfidf(t,d,D) = tf(t,d) × idf(t,D)</p>
-                            <p><strong>Process:</strong> Convert token sequences to numerical vectors</p>
-                            <p><strong>Output:</strong> High-dimensional sparse matrices</p>
+                            <p><strong>Process:</strong> Mengkonversi urutan token menjadi vektor numerik</p>
+                            <p><strong>Output:</strong> Matriks jarang berdimensi tinggi</p>
                             <div class="code-sample">
                                 <strong>TF-IDF Matrix:</strong><br>
                                 Document 1: [0.45, 0.23, 0.00, 0.67, ...]<br>
@@ -500,8 +515,8 @@ class MathCalculator:
                         </div>
                         <div class="p-3">
                             <p><strong>Formula:</strong> cos(θ) = (A·B) / (||A|| × ||B||)</p>
-                            <p><strong>Process:</strong> Calculate pairwise similarities between all documents</p>
-                            <p><strong>Output:</strong> Similarity matrix with scores 0-1</p>
+                            <p><strong>Process:</strong> Hitung kesamaan berpasangan antara semua dokumen</p>
+                            <p><strong>Output:</strong> Matriks kesamaan dengan skor 0-1</p>
                             <div class="similarity-meter">
                                 <div class="similarity-indicator" style="left: 75%"></div>
                             </div>
@@ -515,75 +530,12 @@ class MathCalculator:
                     <div class="timeline-content">
                         <div class="process-header">
                             <span class="step-number">4</span>
-                            Classification & Reporting
+                            Klasifikasi & Pelaporan
                         </div>
                         <div class="p-3">
-                            <p><strong>Threshold:</strong> Configurable similarity threshold (default: 0.7)</p>
-                            <p><strong>Classification:</strong> Similarities above threshold marked as plagiarism</p>
-                            <p><strong>Output:</strong> Comprehensive reports with visualizations</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Features Section -->
-    <div class="container" id="features">
-        <div class="demo-section">
-            <h2 class="text-center mb-4">
-                <i class="fas fa-star"></i> 
-                Key Features
-            </h2>
-            
-            <div class="row">
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="process-card h-100">
-                        <div class="process-header text-center">
-                            <i class="fas fa-code fa-2x mb-2"></i>
-                            <h5>Multi-Language Support</h5>
-                        </div>
-                        <div class="p-3">
-                            <ul class="list-unstyled">
-                                <li><i class="fas fa-check text-success"></i> Python (.py)</li>
-                                <li><i class="fas fa-check text-success"></i> JavaScript (.js, .jsx)</li>
-                                <li><i class="fas fa-check text-success"></i> TypeScript (.ts, .tsx)</li>
-                                <li><i class="fas fa-plus text-info"></i> Extensible to other languages</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="process-card h-100">
-                        <div class="process-header text-center">
-                            <i class="fas fa-shield-alt fa-2x mb-2"></i>
-                            <h5>Robust Detection</h5>
-                        </div>
-                        <div class="p-3">
-                            <ul class="list-unstyled">
-                                <li><i class="fas fa-check text-success"></i> Variable renaming</li>
-                                <li><i class="fas fa-check text-success"></i> Code reordering</li>
-                                <li><i class="fas fa-check text-success"></i> Style changes</li>
-                                <li><i class="fas fa-check text-success"></i> Comment removal</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="process-card h-100">
-                        <div class="process-header text-center">
-                            <i class="fas fa-chart-bar fa-2x mb-2"></i>
-                            <h5>Rich Reports</h5>
-                        </div>
-                        <div class="p-3">
-                            <ul class="list-unstyled">
-                                <li><i class="fas fa-file-alt text-info"></i> HTML Reports</li>
-                                <li><i class="fas fa-table text-info"></i> CSV Export</li>
-                                <li><i class="fas fa-code text-info"></i> JSON Data</li>
-                                <li><i class="fas fa-chart-line text-info"></i> Similarity Heatmaps</li>
-                            </ul>
+                            <p><strong>Threshold:</strong> Ambang kesamaan yang dapat dikonfigurasi (default: 0.7)</p>
+                            <p><strong>Classification:</strong> Kesamaan di atas ambang batas ditandai sebagai plagiarisme</p>
+                            <p><strong>Output:</strong> Laporan komprehensif dengan visualisasi</p>
                         </div>
                     </div>
                 </div>
@@ -596,7 +548,7 @@ class MathCalculator:
         <div class="demo-section">
             <h2 class="text-center mb-4">
                 <i class="fas fa-chart-pie"></i> 
-                Analysis Results
+                Hasil Analisa
             </h2>
             
             <div id="resultsContainer" class="d-none">
@@ -606,7 +558,7 @@ class MathCalculator:
                             <div class="card-body text-center">
                                 <i class="fas fa-file-code fa-2x mb-2"></i>
                                 <h4 id="filesCount">0</h4>
-                                <p>Files Analyzed</p>
+                                <p>File Dianalisis</p>
                             </div>
                         </div>
                     </div>
@@ -615,7 +567,7 @@ class MathCalculator:
                             <div class="card-body text-center">
                                 <i class="fas fa-search fa-2x mb-2"></i>
                                 <h4 id="comparisons">0</h4>
-                                <p>Comparisons</p>
+                                <p>Perbandingan</p>
                             </div>
                         </div>
                     </div>
@@ -624,7 +576,7 @@ class MathCalculator:
                             <div class="card-body text-center">
                                 <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
                                 <h4 id="plagiarismCount">0</h4>
-                                <p>Plagiarism Cases</p>
+                                <p>Kasus Plagiarisme</p>
                             </div>
                         </div>
                     </div>
@@ -633,7 +585,7 @@ class MathCalculator:
                             <div class="card-body text-center">
                                 <i class="fas fa-clock fa-2x mb-2"></i>
                                 <h4 id="processingTime">0s</h4>
-                                <p>Processing Time</p>
+                                <p>Waktu pengerjaan</p>
                             </div>
                         </div>
                     </div>
@@ -643,7 +595,7 @@ class MathCalculator:
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-header">
-                                <h5><i class="fas fa-chart-bar"></i> Similarity Distribution</h5>
+                                <h5><i class="fas fa-chart-bar"></i> Distribusi Kesamaan</h5>
                             </div>
                             <div class="card-body">
                                 <canvas id="similarityChart" width="400" height="200"></canvas>
@@ -653,7 +605,7 @@ class MathCalculator:
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-header">
-                                <h5><i class="fas fa-list"></i> Detection Results</h5>
+                                <h5><i class="fas fa-list"></i>Hasil Deteksi</h5>
                             </div>
                             <div class="card-body">
                                 <div id="detectionResults"></div>
@@ -661,13 +613,15 @@ class MathCalculator:
                         </div>
                     </div>
                 </div>
+                <!-- Matrix Row (inserted separately so matrices appear directly below resultsContainer content) -->
+                <div class="row mt-3" id="matrixRow"></div>
             </div>
 
             <!-- Sample Results Preview -->
             <div id="sampleResults">
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle"></i>
-                    <strong>Demo Mode:</strong> Run analysis above to see real results, or view this sample output:
+                    <strong>Demo Mode:</strong> Jalankan analisis di atas untuk melihat hasil nyata, atau lihat contoh keluaran ini:
                 </div>
                 
                 <div class="row mb-4">
@@ -912,6 +866,10 @@ class MathCalculator:
             fd.append('github_url', url);
             fd.append('threshold', threshold);
             fd.append('min_tokens', minTokens);
+            const skipMatrices = document.getElementById('skipMatrices');
+            if (skipMatrices && skipMatrices.checked) {
+                fd.append('skip_matrices', 'true');
+            }
             const statusArea = document.getElementById('githubStatusArea');
             statusArea.innerHTML = `<div class="alert alert-info"><div class="d-flex align-items-center"><div class="spinner-border spinner-border-sm me-2"></div><div><strong>Memulai analisis...</strong><div class='small'>Mengunduh repository dan mengekstraksi file...</div></div></div></div>`;
             fetch('/analyze/github', { method: 'POST', body: fd })
@@ -935,22 +893,48 @@ class MathCalculator:
                 .then(r => { if (!r.ok) throw new Error('Status tidak ditemukan'); return r.json(); })
                 .then(stat => {
                     if (stat.status === 'processing') {
-                        statusArea.innerHTML = `<div class='alert alert-info'><div class='d-flex align-items-center'><div class='spinner-border spinner-border-sm me-2'></div><div><strong>Memproses...</strong><div class='small'>Menganalisis ${stat.total_files || '?'} file (jika sudah terunduh)...</div></div></div></div>`;
-                        setTimeout(() => pollGithubStatus(analysisId, startTs), 2000);
+                        const processed = stat.processed_files || 0;
+                        const total = stat.total_files || 0;
+                        let pct = 0;
+                        if (total > 0) pct = Math.min(100, Math.round((processed / total) * 100));
+                        statusArea.innerHTML = `
+                          <div class='alert alert-info'>
+                            <div class='d-flex align-items-center mb-1'>
+                              <div class='spinner-border spinner-border-sm me-2'></div>
+                              <div>
+                                <strong>Memproses...</strong>
+                                <div class='small'>${processed} / ${total || '?'} file dianalisis</div>
+                              </div>
+                            </div>
+                            <div class="progress" style="height:6px;">
+                              <div class="progress-bar" role="progressbar" style="width:${pct}%;" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                          </div>`;
+                        setTimeout(() => pollGithubStatus(analysisId, startTs), 1500);
                     } else if (stat.status === 'completed') {
                         statusArea.innerHTML = `<div class='alert alert-success'><strong>Analisis selesai.</strong> Menampilkan hasil...</div>`;
-                        // Bentuk data sesuai showResults
                         const processingTime = ((Date.now() - startTs) / 1000).toFixed(2);
-                        const mapped = {
-                            total_files: stat.total_files || 0,
-                            total_comparisons: stat.total_comparisons || 0,
-                            plagiarism_cases: stat.plagiarism_cases || 0,
-                            all_comparisons: stat.all_comparisons || stat.results || [],
-                            duration: processingTime
-                        };
-                        showResults(mapped);
+                        // If backend packs full result under result / results, merge it
+                        let payload = {};
+                        if (stat.result && typeof stat.result === 'object') {
+                            payload = { ...stat.result };
+                        } else if (stat.results && typeof stat.results === 'object') {
+                            payload = { ...stat.results };
+                        }
+                        // Fallback legacy flat fields
+                        if (!payload.filesCount) payload.filesCount = stat.total_files || payload.total_files || 0;
+                        if (!payload.comparisons && stat.total_comparisons) payload.comparisons = stat.total_comparisons;
+                        if (!payload.plagiarismCount) payload.plagiarismCount = stat.plagiarism_cases || payload.plagiarismCases || 0;
+                        if (!payload.comparisonsDetail) {
+                            payload.comparisonsDetail = stat.all_comparisons || payload.all_comparisons || [];
+                        }
+                        payload.processingTime = payload.processingTime || payload.duration || processingTime;
+                        // Matrices (similarityMatrix, tfidf) should already be in payload if backend provided.
+                        showResults(payload);
                     } else if (stat.status === 'error') {
                         statusArea.innerHTML = `<div class='alert alert-danger'><strong>Error:</strong> ${stat.error || 'Terjadi kesalahan'}</div>`;
+                    } else if (stat.status === 'insufficient_files') {
+                        statusArea.innerHTML = `<div class='alert alert-warning'><strong>File tidak cukup.</strong> Repository harus memiliki minimal 2 file kode.</div>`;
                     } else {
                         statusArea.innerHTML = `<div class='alert alert-warning'>Status: ${stat.status}</div>`;
                     }
@@ -1023,7 +1007,10 @@ class MathCalculator:
                     processingTime: data.processingTime ?? data.duration ?? data.processing_time ?? '0',
                     comparisonsDetail: data.comparisonsDetail ?? data.all_comparisons ?? data.results ?? [],
                     similarityScores: data.similarityScores ?? data.similarity_scores ?? undefined,
-                    manualSimilarity: data.manualSimilarity
+                    manualSimilarity: data.manualSimilarity,
+                    similarityMatrix: data.similarityMatrix ?? data.similarity_matrix ?? undefined,
+                    fileNames: data.fileNames ?? data.filenames ?? data.files ?? undefined,
+                    tfidf: data.tfidf ?? undefined
                 };
                 data = mapped;
             // Sembunyikan hasil sampel
@@ -1093,7 +1080,42 @@ class MathCalculator:
         } else {
             summaryHTML = `<div class="alert alert-success"><h6><i class="fas fa-check-circle"></i> Tidak Ada Plagiarisme</h6><p>Tidak ditemukan kemiripan signifikan (≥50%).</p></div>`;
         }
-        resultsDiv.innerHTML = summaryHTML + tableHTML;
+                // Inject table + summary only (matrices moved to #matrixRow)
+                resultsDiv.innerHTML = summaryHTML + tableHTML;
+                // Populate matrix row separately so they appear directly beneath resultsContainer
+                const matrixRow = document.getElementById('matrixRow');
+                if (matrixRow) {
+                    let matrixHTML = '';
+                    if (data.similarityMatrix && data.fileNames) {
+                        matrixHTML += `<div class='col-12'>
+    <div class='cg-matrix-container'>
+        <div class='d-flex justify-content-between align-items-center mb-2'>
+            <div class='cg-matrix-title'><i class="fas fa-table"></i> Cosine Similarity Matrix</div>
+            <div class='cg-toolbar'>
+                <button class='cg-btn-icon' onclick="toggleMatrixSection('simMatrixBody')"><i class='fas fa-eye'></i>Toggle</button>
+                <button class='cg-btn-icon' onclick='exportSimilarityCSV()'><i class='fas fa-file-csv'></i>CSV</button>
+            </div>
+        </div>
+        <div id='simMatrixBody'>${renderSimilarityMatrix(data.fileNames, data.similarityMatrix)}<div class='cg-note'><i class='fas fa-info-circle'></i> Warna sel mengikuti kategori threshold.</div></div>
+    </div>
+</div>`;
+                    }
+                    if (data.tfidf && data.tfidf.featureNames && data.tfidf.matrix) {
+                        matrixHTML += `<div class='col-12'>
+    <div class='cg-matrix-container'>
+        <div class='d-flex justify-content-between align-items-center mb-2'>
+            <div class='cg-matrix-title'><i class="fas fa-layer-group"></i> TF-IDF Matrix (Top 30)</div>
+            <div class='cg-toolbar'>
+                <button class='cg-btn-icon' onclick="toggleMatrixSection('tfidfMatrixBody')"><i class='fas fa-eye'></i>Toggle</button>
+                <button class='cg-btn-icon' onclick='exportTfidfCSV()'><i class='fas fa-file-csv'></i>CSV</button>
+            </div>
+        </div>
+    <div id='tfidfMatrixBody'>${renderTfidfMatrix(data.tfidf.featureNames, data.tfidf.matrix, data.fileNames)}<div class='cg-note'><i class='fas fa-info-circle'></i> Menampilkan 30 token teratas untuk visualisasi; ekspor CSV memuat seluruh vocabulary.</div></div>
+    </div>
+</div>`;
+                    }
+                    matrixRow.innerHTML = matrixHTML;
+                }
     // Update distribusi kemiripan
         let scores = [];
         if (data.comparisonsDetail && data.comparisonsDetail.length) {
@@ -1194,12 +1216,151 @@ class MathCalculator:
             window.analyzeGithubRepo = analyzeGithubRepo;
             window.startDemo = startDemo;
             window.updateThreshold = updateThreshold;
+            window.toggleMatrixSection = function(id){ const el = document.getElementById(id); if(el) el.classList.toggle('cg-section-collapsed'); };
+            window.renderSimilarityMatrix = renderSimilarityMatrix;
+            window.renderTfidfMatrix = renderTfidfMatrix;
+            window.exportSimilarityCSV = exportSimilarityCSV;
+            window.exportTfidfCSV = exportTfidfCSV;
         });
 
         // Launch Streamlit interface
         function launchStreamlit() {
             // In a real deployment, this would open the Streamlit app
             alert('To launch the full web interface:\n\n1. Install dependencies: pip install streamlit\n2. Run: streamlit run web_interface.py\n3. Open browser to http://localhost:8501');
+        }
+
+        // Helpers to render matrices
+        let _lastSimilarity = null, _lastFileNames = null, _lastTfidf = null;
+        function renderSimilarityMatrix(fileNames, matrix) {
+            _lastSimilarity = matrix; _lastFileNames = fileNames;
+            if(!Array.isArray(fileNames) || !Array.isArray(matrix)) return '<div class="text-muted">No matrix data.</div>';
+            let html = '<div class="cg-matrix-wrapper"><table class="table table-sm table-bordered text-center cg-matrix-table"><thead><tr><th>File</th>';
+            fileNames.forEach(fn => { html += `<th class='text-truncate' style='max-width:140px;'>${escapeHtml(fn)}</th>`; });
+            html += '</tr></thead><tbody>';
+            for(let i=0;i<fileNames.length;i++) {
+                html += `<tr><th class='table-primary text-truncate' style='max-width:160px;'>${escapeHtml(fileNames[i])}</th>`;
+                for(let j=0;j<fileNames.length;j++) {
+                    const val = (matrix[i] && matrix[i][j] !== undefined) ? matrix[i][j] : 0;
+                    const style = similarityGradientStyle(val, i===j);
+                    html += `<td style='${style}'>${val.toFixed(2)}</td>`;
+                }
+                html += '</tr>';
+            }
+            html += '</tbody></table></div>';
+            return html;
+        }
+
+        function renderTfidfMatrix(featureNames, tfidfMatrix, fileNames){
+            if(!Array.isArray(featureNames) || !Array.isArray(tfidfMatrix)) return '<div class="text-muted">No TF-IDF data.</div>';
+            // Compute aggregate scores for ranking (still show top 30 for UI)
+            const scores = featureNames.map((f, idx) => {
+                let s=0; for(let r=0;r<tfidfMatrix.length;r++){ s += (tfidfMatrix[r][idx]||0);} return {f, s};
+            });
+            scores.sort((a,b)=>b.s-a.s);
+            const topTokens = scores.slice(0,30).map(o=>o.f);
+            _lastTfidf = { featureNames, matrix: tfidfMatrix, top: featureNames }; // store full list for full CSV export
+            let idxMap = new Map(); featureNames.forEach((f,i)=> idxMap.set(f,i));
+            // Precompute max value for gradient scaling
+            let maxVal = 0; for(let r=0;r<tfidfMatrix.length;r++){ for(let c=0;c<featureNames.length;c++){ const v=tfidfMatrix[r][c]; if(v>maxVal) maxVal=v; }}
+            if(maxVal===0) maxVal=1;
+            let html = '<div class="cg-matrix-wrapper"><table class="table table-sm table-striped cg-matrix-table"><thead><tr><th>Token</th>';
+            fileNames && fileNames.forEach(fn => { html += `<th class='text-truncate' style='max-width:140px;'>${escapeHtml(fn)}</th>`; });
+            html += '</tr></thead><tbody>';
+            topTokens.forEach(tok => {
+                const colIdx = idxMap.get(tok);
+                html += `<tr><th class='text-truncate' style='max-width:160px;'>${escapeHtml(tok)}</th>`;
+                if(fileNames){
+                    for(let r=0;r<tfidfMatrix.length;r++) {
+                        const val = tfidfMatrix[r][colIdx] || 0;
+                        const style = tfidfGradientStyle(val, maxVal);
+                        html += `<td style='${style}'>${val? val.toFixed(3): ''}</td>`;
+                    }
+                }
+                html += '</tr>';
+            });
+            html += '</tbody></table></div>';
+            return html;
+        }
+
+        // Continuous gradient helpers
+        function similarityGradientStyle(v, isDiag){
+            if(isDiag) return 'background:#198754;color:#fff;font-weight:600;'; // emphasize self-similarity
+            // Gradient from green (0) -> yellow (0.5) -> red (>=0.7)
+            let r,g,b;
+            if(v < 0.5){
+                // green (40,167,69) to yellow (255,193,7)
+                const t = v/0.5;
+                r = Math.round(40 + (255-40)*t);
+                g = Math.round(167 + (193-167)*t);
+                b = Math.round(69 + (7-69)*t);
+            } else if (v < 0.7){
+                const t = (v-0.5)/0.2; // yellow to orange (255,140,0)
+                r = Math.round(255 + (255-255)*t);
+                g = Math.round(193 + (140-193)*t);
+                b = Math.round(7 + (0-7)*t);
+            } else {
+                const t = Math.min(1,(v-0.7)/0.3); // orange to red (220,53,69)
+                r = Math.round(255 + (220-255)*t);
+                g = Math.round(140 + (53-140)*t);
+                b = Math.round(0 + (69-0)*t);
+            }
+            const fg = v>0.6 ? '#fff' : '#000';
+            return `background:rgb(${r},${g},${b});color:${fg};`;
+        }
+        function tfidfGradientStyle(v, maxVal){
+            const ratio = maxVal? (v/maxVal):0;
+            // lightest (#f1f5f9) to deep blue (#0d6efd)
+            const start = [241,245,249];
+            const end = [13,110,253];
+            const r = Math.round(start[0] + (end[0]-start[0])*ratio);
+            const g = Math.round(start[1] + (end[1]-start[1])*ratio);
+            const b = Math.round(start[2] + (end[2]-start[2])*ratio);
+            const fg = ratio>0.55 ? '#fff':'#000';
+            return `background:rgb(${r},${g},${b});color:${fg};`;
+        }
+
+        function escapeHtml(str){
+            return String(str).replace(/[&<>"] /g, function(c){
+                switch(c){case '&': return '&amp;'; case '<': return '&lt;'; case '>': return '&gt;'; case '"': return '&quot;'; default: return c;}
+            });
+        }
+        function exportSimilarityCSV(){
+            if(!_lastSimilarity || !_lastFileNames){ alert('Belum ada data similarity.'); return; }
+            let rows = [];
+            rows.push(['File', ..._lastFileNames]);
+            for(let i=0;i<_lastFileNames.length;i++){
+                let row = [_lastFileNames[i]];
+                for(let j=0;j<_lastFileNames.length;j++){
+                    const v = (_lastSimilarity[i] && _lastSimilarity[i][j]!==undefined)? _lastSimilarity[i][j]:0;
+                    row.push(v.toFixed(4));
+                }
+                rows.push(row);
+            }
+            downloadCSV(rows.map(r=>r.map(csvEscape).join(',')).join('\n'), 'similarity_matrix.csv');
+        }
+        function exportTfidfCSV(){
+            if(!_lastTfidf || !_lastFileNames){ alert('Belum ada data TF-IDF.'); return; }
+            const { featureNames, matrix } = _lastTfidf; // full vocabulary
+            let rows = [];
+            rows.push(['Token', ..._lastFileNames]);
+            for(let t=0;t<featureNames.length;t++){
+                let row = [featureNames[t]];
+                for(let r=0;r<matrix.length;r++){
+                    const v = matrix[r][t] || 0; row.push(v? v.toFixed(6): '0');
+                }
+                rows.push(row);
+            }
+            downloadCSV(rows.map(r=>r.map(csvEscape).join(',')).join('\n'), 'tfidf_full.csv');
+        }
+        function csvEscape(val){
+            const s = String(val);
+            if(/[",\n]/.test(s)) return '"'+s.replace(/"/g,'""')+'"';
+            return s;
+        }
+        function downloadCSV(content, filename){
+            const blob = new Blob([content], {type:'text/csv;charset=utf-8;'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
         }
     </script>
 </body>

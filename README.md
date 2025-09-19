@@ -16,6 +16,12 @@ CodeGuard implements a research-grade plagiarism detection system specifically d
 - **Batch Processing**: Analyze entire directories or specific file lists
 - **Clustering**: Automatic detection of similar code clusters
 - **Research-ready**: Designed for academic research and thesis work
+- **Advanced Tuning**: Token filtering (AST node removal, literals, operators, keywords) & TF-IDF hyperparameters (min_df, max_df, sublinear_tf, norm, max_features, etc.)
+- **Explain Mode**: Per pasangan file top fitur kontribusi similarity
+- **Similarity Statistics Endpoint**: Distribusi (mean, median, quartiles, std) dari analisis terakhir
+- **Matrix Exposure (New)**: API responses for preset/multi-file/manual (with preset) now include `similarityMatrix`, `fileNames`, and a `tfidf` object (`featureNames`, `matrix`) enabling rich frontend visualizations. Large matrices may impact payload size for very big file sets.
+- **AST Path N-grams (New)**: Optional hierarchical path shingles (root→node sequences) hashed into compact tokens (e.g. `path3_a1b2c3`) to capture deeper structural patterns beyond flat node tokens.
+- **Category Weighting Extensions (New)**: Fine-grained down-weighting for structural / variable / operator / path / keyword token groups to reduce noisy high-frequency feature influence.
 
 ## 🏗️ Architecture
 
@@ -91,6 +97,267 @@ You can analyze all Python files in a public GitHub repository directly from the
 6. Wait for the analysis to complete. Results will be shown in the Results section, including a table of file pairs, similarity scores, and plagiarism status.
 
 **Note:** Only Python files (`.py`) are currently analyzed from the repository. Support for other languages can be added as needed.
+
+### New API Enhancements (Tuning & Explain Mode)
+
+Endpoint utama multi-file: `POST /analyze/compare`
+
+Tambahan field (multipart/form-data):
+
+| Field | Tipe | Default | Deskripsi |
+|-------|------|---------|-----------|
+| threshold | float | 0.7 | Ambang batas label *Plagiat* |
+| remove_node_tokens | bool | false | Hilangkan token struktur `NODE_*` |
+| remove_literals | bool | false | Hilangkan literal (STR/NUM/BOOL/LITERAL) |
+| remove_operators | bool | false | Hilangkan operator (OP_, CMP_, OPERATOR) |
+| remove_keywords | bool | false | Hilangkan Python keywords |
+| min_token_length | int | 0 | Panjang minimal token |
+| tf_min_df | int | 1 | Minimum document frequency |
+| tf_max_df | float | 1.0 | Maximum doc frequency (≤1=fraction, >1=absolute) |
+| tf_sublinear_tf | bool | false | Gunakan 1+log(tf) |
+| tf_use_idf | bool | true | Pakai bobot IDF |
+| tf_smooth_idf | bool | true | Smoothing IDF (N+1/df+1) |
+| tf_norm | str | l2 | Normalisasi (l2/none) |
+| tf_max_features | int | 0 | Batasi jumlah fitur (0=tidak) |
+| explain | bool | false | Aktifkan explain mode per pasangan |
+| explain_top_k | int | 5 | Jumlah fitur top saat explain |
+| structural_weight | float | 1.0 | Faktor pengurang bobot token struktural (0< w <1, contoh 0.4) |
+| var_weight | float | 1.0 | Downweight variable usage tokens (0<w<1) |
+| operator_weight | float | 1.0 | Downweight operator / comparator tokens (0<w<1) |
+| path_weight | float | 1.0 | Downweight generated AST path n-gram tokens (0<w<1) |
+| keyword_weight | float | 1.0 | Downweight function/class definitional markers (0<w<1) |
+| enable_path_ngrams | bool | false | Aktifkan generasi token jalur AST (shingles) |
+| path_ngram_min | int | 2 | Panjang minimum n (>=2) |
+| path_ngram_max | int | 4 | Panjang maksimum n |
+| path_ngram_hash | bool | true | Gunakan hashing untuk kompresi vocabulary |
+| path_ngram_hash_len | int | 8 | Panjang hexdigest dipotong |
+| path_ngram_cap | int | 0 | Batasi jumlah token path unik (0 = tanpa batas) |
+| path_ngram_cap_strategy | str | frequency | 'frequency' (top-N frekuensi) atau 'random' |
+| path_ngram_cap_seed | int | - | Seed untuk strategi random (opsional) |
+
+Response tambahan:
+* `tuningConfig` – metadata konfigurasi yang digunakan.
+* `explain` – daftar pasangan dengan `top_features` (jika explain=true).
+
+Endpoint statistik: `GET /analyze/stats` → `{ "stats": { mean, median, std, min, max, q25, q75 }, featureCount }`
+
+### Contoh curl
+
+Dasar + threshold dinaikkan:
+```bash
+curl -X POST http://localhost:8000/analyze/compare \
+   -F "files=@data/sample_codes/sample1.py" \
+   -F "files=@data/sample_codes/sample2.py" \
+   -F threshold=0.85
+```
+
+Filtering struktur & operator + TF-IDF tuning:
+```bash
+curl -X POST http://localhost:8000/analyze/compare \
+   -F "files=@data/sample_codes/sample1.py" \
+   -F "files=@data/sample_codes/plagiarized_sample.py" \
+   -F remove_node_tokens=true -F remove_operators=true -F remove_literals=true \
+   -F tf_min_df=2 -F tf_max_df=0.8 -F tf_sublinear_tf=true -F tf_norm=none -F tf_max_features=300 \
+   -F structural_weight=0.4 \
+   -F threshold=0.9
+```
+
+Explain mode (top 8 fitur):
+```bash
+curl -X POST http://localhost:8000/analyze/compare \
+   -F "files=@data/sample_codes/sample1.py" \
+   -F "files=@data/sample_codes/plagiarized_sample.py" \
+   -F explain=true -F explain_top_k=8
+```
+
+Ambil statistik similarity terakhir:
+```bash
+curl http://localhost:8000/analyze/stats
+```
+
+### Strategi Tuning Singkat
+1. Naikkan threshold (0.85–0.9) untuk mengurangi false positive.
+2. Aktifkan `remove_node_tokens` + `remove_operators` untuk mengurangi overlap struktur generik.
+3. Gunakan `tf_min_df=2` dan `tf_max_df=0.8` untuk memangkas token terlalu jarang/umum.
+4. Nonaktifkan normalisasi (`tf_norm=none`) jika dokumen berbeda panjang ekstrem.
+5. Aktifkan `tf_sublinear_tf=true` untuk menekan pengaruh token yang berulang.
+6. Batasi fitur (`tf_max_features=200-300`) agar fokus pada token paling informatif.
+7. Downweight struktur generik dengan `structural_weight=0.3–0.6` jika overlap masih tinggi.
+8. Eksperimen matikan IDF (`tf_use_idf=false`) untuk baseline lalu aktifkan kembali.
+9. Aktifkan `enable_path_ngrams=true` jika ingin sensitivitas lebih pada pola hierarki (misal bentuk nested loops / branching). Turunkan `path_weight` (0.3–0.7) untuk menghindari path tokens mendominasi ketika jumlahnya sangat banyak.
+10. Jika terlalu banyak fitur hasil path n-grams, naikkan `path_ngram_min` atau turunkan `path_ngram_max`, atau set `path_ngram_hash_len` lebih pendek untuk mengontrol ukuran payload.
+
+### Preset Konfigurasi (Baru)
+Untuk mempercepat pemilihan konfigurasi, tersedia endpoint preset:
+
+1. List semua preset:
+```bash
+curl http://localhost:8000/analyze/presets
+```
+
+2. Jalankan analisis dengan preset (multi-file):
+```bash
+curl -X POST http://localhost:8000/analyze/compare_preset \
+   -F preset=strict \
+   -F files=@data/sample_codes/original.py \
+   -F files=@data/sample_codes/different_code.py
+```
+
+Preset tersedia:
+
+| Nama | Tujuan | Karakteristik Utama |
+|------|--------|---------------------|
+| strict | Minimalkan similarity palsu pada kode pendek | remove_node_tokens, remove_literals, structural_weight=0.1, var_weight=0.2, keep_identifier_detail=true, enable_path_ngrams=false |
+| balanced | Kompromi sensitivitas vs false positive | structural_weight=0.15, var_weight=0.3, keep_identifier_detail=true, enable_path_ngrams=true (path_weight=0.6) |
+| permissive | Lebih mudah anggap kode mirip/plagiat | normalisasi lebih agresif (keep_identifier_detail=false), structural_weight=0.3, enable_path_ngrams=true |
+
+Contoh strict + override threshold:
+```bash
+curl -X POST http://localhost:8000/analyze/compare_preset \
+   -F preset=strict \
+   -F threshold=0.65 \
+   -F files=@data/sample_codes/original.py \
+   -F files=@data/sample_codes/different_code.py
+```
+
+Response menambahkan field `preset` dan tetap menyertakan `tuningConfig`.
+
+### Preset di Semua Endpoint (Unified)
+Preset sekarang bisa dipakai juga di endpoint:
+
+1. Manual dua kode:
+```bash
+curl -X POST http://localhost:8000/analyze/manual \
+   -H 'Content-Type: application/json' \
+   -d '{"code1":"print(1)","code2":"print(2)","preset":"strict"}'
+```
+
+2. Multi-file generic (shortcut preset):
+```bash
+curl -X POST http://localhost:8000/analyze/compare \
+   -F preset=balanced \
+   -F files=@data/sample_codes/sample1.py \
+   -F files=@data/sample_codes/sample2.py
+```
+
+3. GitHub repository (lihat bagian GitHub lanjutan di bawah):
+```bash
+curl -X POST http://localhost:8000/analyze/github \
+   -F github_url=https://github.com/owner/repo \
+   -F preset=strict
+```
+
+Jika preset digunakan, parameter granular (remove_literals, tf_min_df, dll.) diabaikan dan diganti konfigurasi preset sepenuhnya.
+
+### Endpoint GitHub (API Terbaru)
+Endpoint: `POST /analyze/github`
+
+Form fields:
+| Field | Wajib | Deskripsi |
+|-------|-------|-----------|
+| github_url | Ya | URL public repo GitHub |
+| threshold | Tidak (default 0.7 atau default preset) | Ambang batas kemiripan |
+| preset | Tidak | `strict` / `balanced` / `permissive` |
+| explain | Tidak | `true/false` untuk aktifkan explain mode |
+| explain_top_k | Tidak | Jumlah top fitur per pasangan (default 5) |
+| skip_matrices | Tidak | `true/false` Jika true, server tidak menyertakan `similarityMatrix` & `tfidf` untuk menghemat bandwidth |
+
+Response awal:
+```json
+{
+   "analysis_id": "<uuid>",
+   "status": "started",
+   "repository_url": "https://github.com/owner/repo",
+   "preset": "strict"
+}
+```
+
+Polling status:
+```bash
+curl -s http://localhost:8000/status/<analysis_id> | jq
+```
+
+Jika selesai (`status=completed`), payload memuat struktur:
+```json
+{
+   "status": "completed",
+   "repository_url": "...",
+   "preset": "strict",
+   "threshold_used": 0.7,
+   "result": {
+       "filesCount": N,
+       "comparisons": M,
+       "comparisonsDetail": [ {"file1":"...","file2":"...","similarity":0.63, "status":"Mirip"} ],
+       "similarityScores": [ ... ],
+       "explain": [ { "file1":"...","file2":"...","top_features":[{"term":"op_add","contribution":0.012}, ...]} ]
+   }
+}
+```
+
+Contoh lengkap dengan explain:
+```bash
+curl -s -X POST http://localhost:8000/analyze/github \
+   -F github_url=https://github.com/owner/repo \
+   -F preset=balanced \
+   -F explain=true \
+   -F explain_top_k=7 | jq
+```
+
+Contoh skip matrices (lebih ringan untuk repo besar):
+```bash
+curl -s -X POST http://localhost:8000/analyze/github \
+   -F github_url=https://github.com/owner/repo \
+   -F preset=strict \
+   -F skip_matrices=true | jq
+```
+Field `result` tidak akan mengandung `similarityMatrix` ataupun objek `tfidf` ketika opsi ini aktif.
+
+### Status Endpoint
+Endpoint: `GET /status/{analysis_id}`
+
+Mengembalikan:
+| Field | Deskripsi |
+|-------|-----------|
+| status | processing / completed / error / insufficient_files |
+| preset | Nama preset bila dipakai |
+| threshold_used | Ambang yang dipakai (jika selesai) |
+| result | Objek hasil lengkap (mirip response compare) |
+| error | Pesan error bila status=error |
+
+### Explain Mode (Detail)
+Pada mode explain setiap pasangan file memiliki array `top_features` dengan kolom:
+| Kolom | Arti |
+|-------|------|
+| term | Nama fitur/token ter-normalisasi |
+| contribution | Nilai kontribusi (perkalian bobot tf-idf antar dokumen) |
+| weight_file1 / weight_file2 | Bobot tf-idf masing-masing dokumen |
+
+Interpretasi praktis:
+- Fitur ranking atas = fitur paling banyak berbagi bobot signifikan antar dua file.
+- Jika banyak token struktur generik muncul (NODE_, VAR_), pertimbangkan menurunkan `structural_weight` atau gunakan preset `strict`.
+
+### Troubleshooting
+| Kasus | Gejala | Solusi |
+|-------|--------|--------|
+| 404 preset | `Preset 'abc' tidak ditemukan` | Gunakan salah satu: strict, balanced, permissive |
+| insufficient_files (GitHub) | status=insufficient_files | Pastikan repo punya ≥2 file kode yang didukung |
+| similarity terlalu tinggi | Semua pasangan >0.9 | Pakai preset `strict` atau turunkan `var_weight`, `structural_weight` |
+| explain kosong | `explain=[]` | Pastikan `explain=true` dan ada ≥1 pasangan file valid |
+| skor tidak berubah setelah ubah params | Perubahan tidak mempengaruhi hasil | Cek apakah Anda mengirim `preset` (preset override param manual) |
+
+### Rekomendasi Pemilihan Preset
+| Situasi | Gunakan |
+|---------|---------|
+| Kode tugas pendek & pola mirip | strict |
+| Analisis umum campuran panjang kode | balanced |
+| Ingin menemukan hampir duplikat / clustering awal | permissive |
+
+---
+
+
+### Explain Mode Interpretasi
+`contribution = tfidf_doc1[i] * tfidf_doc2[i]`. Semakin tinggi semakin besar peran fitur.
+Gunakan ini untuk investigasi cepat mengapa dua file mirip.
 
 #### API Endpoint
 
@@ -183,6 +450,39 @@ tfidf(t,d,D) = tf(t,d) × idf(t,D)
 ```
 
 **Cosine Similarity:**
+### AST Path N-grams (Hierarchical Structural Features)
+
+Path n-grams mengekstrak semua jalur root→node pada AST, kemudian membentuk window berukuran n (n_min ≤ n ≤ n_max). Setiap window direpresentasikan sebagai token hash (default) untuk menjaga vocabulary tetap ramping. Contoh (sebelum hashing):
+```
+Module>FunctionDef>arguments
+Module>FunctionDef>arguments>arg
+```
+Dengan hashing (panjang 6): `path3_a1b2c3`.
+
+Manfaat:
+- Menangkap pola struktur dalam (misal rantai if → for → call) yang hilang jika hanya memakai token tipe node individual.
+- Membantu membedakan dua fungsi dengan struktur kontrol berbeda tapi jumlah token datar mirip.
+
+Risiko & Mitigasi:
+- Ledakan jumlah token pada file besar: atur `path_ngram_max` lebih kecil atau turunkan `hash_len`.
+- Dominasi fitur struktur: turunkan `path_weight` < 1.0 (misal 0.5).
+ - Vocabulary path terlalu besar: gunakan `path_ngram_cap` (misal 100) + `path_ngram_cap_strategy=frequency` untuk hanya menyimpan shingles paling informatif.
+
+Konfigurasi cepat:
+```
+enable_path_ngrams=true
+path_ngram_min=2
+path_ngram_max=3
+path_ngram_hash=true
+path_ngram_hash_len=6
+path_weight=0.5
+path_ngram_cap=50
+path_ngram_cap_strategy=frequency
+```
+
+### Category Weighting Rationale
+Token kategori tertentu (struktur dasar, operator, path shingles, definisi kelas/fungsi) sering muncul di banyak file sehingga menaikkan similarity rata-rata. Dengan factor <1 (misal 0.4) kita menurunkan kontribusi mereka sehingga fitur yang lebih unik (identifier pattern, kombinasi operator spesifik, path langka) lebih menonjol. Saat ini sistem hanya mendukung penurunan bobot (0<w<1); peningkatan (>1) dapat ditambahkan di masa depan bila diperlukan.
+
 ```
 cos(θ) = (A·B) / (||A|| × ||B||)
 ```

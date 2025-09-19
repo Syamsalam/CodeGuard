@@ -5,7 +5,8 @@ Supports Python and JavaScript through tree-sitter parsing.
 
 import ast
 import re
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Optional, Any, Set
+import hashlib
 from pathlib import Path
 import tree_sitter
 
@@ -15,6 +16,12 @@ class ASTTokenizer:
         self.supported_languages = ['python', 'javascript']
         self._parsers = {}
         self._initialize_parsers()
+        # Pre-computed sets for filtering
+        import keyword
+        self.python_keywords: Set[str] = set(keyword.kwlist)
+        # Generic operator & punctuation tokens (will match normalization outputs like OP_, CMP_, etc.)
+        self.operator_markers: Set[str] = {"OPERATOR", "BINARY_OP", "COMPARE"}
+        self.literal_markers: Set[str] = {"LITERAL", "STR_LITERAL", "NUM_LITERAL", "BOOL_LITERAL"}
     
     def _initialize_parsers(self):
         """Initialize tree-sitter parsers for supported languages"""
@@ -79,7 +86,11 @@ class ASTTokenizer:
         if language not in self.supported_languages:
             raise ValueError(f"Unsupported language: {language}")
         
-        # Preprocess code
+        # Early return for empty code
+        if not code.strip():
+            return []
+
+        # Preprocess code (preserve newlines for Python to keep AST valid)
         cleaned_code = self._preprocess_code(code)
         
         # Use appropriate tokenization method
@@ -89,6 +100,95 @@ class ASTTokenizer:
             return self._tokenize_javascript(cleaned_code)
         
         return []
+
+    # ------------------------------------------------------------------
+    # AST Path N-gram (Shingles) Generation
+    # ------------------------------------------------------------------
+    def generate_path_ngrams(self,
+                              code: str,
+                              language: str,
+                              n_min: int = 2,
+                              n_max: int = 4,
+                              use_hash: bool = True,
+                              hash_len: int = 8) -> List[str]:
+        """Generate AST path n-gram tokens to enrich structural context.
+
+        Each root-to-node path (sequence of node type names) contributes
+        sliding window n-grams (n in [n_min, n_max]).
+
+        Tokens are emitted as either:
+            PATH{n}_{hash}
+        or (if use_hash False)
+            PATH{n}_Type1>Type2>Type3  (sanitized, truncated if very long)
+
+        Args:
+            code: Source code string
+            language: 'python' or 'javascript'
+            n_min: Minimum n-gram length (>=2)
+            n_max: Maximum n-gram length (>= n_min)
+            use_hash: Hash path string to compact vocabulary
+            hash_len: Length of hex digest to retain when hashing
+
+        Returns:
+            List of path n-gram token strings.
+        """
+        if n_min < 2:
+            n_min = 2
+        if n_max < n_min:
+            n_max = n_min
+        if not code.strip():
+            return []
+        if language not in ('python','javascript'):
+            return []
+        paths: List[List[str]] = []
+        try:
+            if language == 'python':
+                import ast as _pyast
+                tree = _pyast.parse(code)
+                # DFS collecting paths
+                def _walk(node, current):
+                    node_type = type(node).__name__
+                    new_path = current + [node_type]
+                    paths.append(new_path)
+                    for child in _pyast.iter_child_nodes(node):
+                        _walk(child, new_path)
+                _walk(tree, [])
+            else:
+                # Use tree-sitter for JS if available
+                if 'javascript' not in self._parsers:
+                    return []
+                parser = self._parsers['javascript']
+                t = parser.parse(bytes(code,'utf8'))
+                def _walk_ts(node, current):
+                    node_type = node.type
+                    new_path = current + [node_type]
+                    paths.append(new_path)
+                    for ch in node.children:
+                        _walk_ts(ch, new_path)
+                _walk_ts(t.root_node, [])
+        except Exception:
+            return []
+
+        tokens: List[str] = []
+        for p in paths:
+            L = len(p)
+            if L < n_min:
+                continue
+            for n in range(n_min, min(n_max, L)+1):
+                # sliding windows
+                for i in range(0, L-n+1):
+                    window = p[i:i+n]
+                    path_str = '>'.join(window)
+                    if use_hash:
+                        h = hashlib.sha1(path_str.encode('utf-8')).hexdigest()[:hash_len]
+                        tokens.append(f"PATH{n}_{h}")
+                    else:
+                        # Sanitize and truncate overlong tokens
+                        sanitized = path_str.replace(' ','_')
+                        if len(sanitized) > 60:
+                            sanitized = sanitized[:60]
+                        tokens.append(f"PATH{n}_{sanitized}")
+        return tokens
     
     def _detect_language(self, file_path: Path) -> Optional[str]:
         """Detect programming language from file extension"""
@@ -105,20 +205,17 @@ class ASTTokenizer:
         """
         Preprocess code by removing comments, docstrings, and normalizing whitespace.
         """
-        # Remove single-line comments
-        code = re.sub(r'//.*$', '', code, flags=re.MULTILINE)  # JS/C++ style
-        code = re.sub(r'#.*$', '', code, flags=re.MULTILINE)   # Python style
-        
-        # Remove multi-line comments
-        code = re.sub(r'/\*.*?\*/', '', code, flags=re.DOTALL)  # JS/C++ style
-        code = re.sub(r'""".*?"""', '', code, flags=re.DOTALL)  # Python docstrings
-        code = re.sub(r"'''.*?'''", '', code, flags=re.DOTALL)  # Python docstrings
-        
-        # Normalize whitespace
-        code = re.sub(r'\s+', ' ', code)
-        code = code.strip()
-        
-        return code
+        # Remove single-line comments (keep newlines)
+        code = re.sub(r'//.*$', '', code, flags=re.MULTILINE)
+        code = re.sub(r'#.*$', '', code, flags=re.MULTILINE)
+
+        # Remove multi-line comments / docstrings
+        code = re.sub(r'/\*.*?\*/', '', code, flags=re.DOTALL)
+        code = re.sub(r'""".*?"""', '', code, flags=re.DOTALL)
+        code = re.sub(r"'''.*?'''", '', code, flags=re.DOTALL)
+
+        # Do NOT collapse all whitespace to single spaces to preserve indentation for Python
+        return code.strip('\n')
     
     def _tokenize_python(self, code: str) -> List[str]:
         """Tokenize Python code using built-in AST module"""
@@ -238,12 +335,24 @@ class ASTTokenizer:
             token_counts[token] = token_counts.get(token, 0) + 1
         return token_counts
     
-    def normalize_tokens(self, tokens: List[str]) -> List[str]:
-        """Apply additional normalization to tokens"""
-        normalized = []
-        
+    def normalize_tokens(self, tokens: List[str], keep_identifier_detail: bool = False) -> List[str]:
+        """Apply normalization.
+
+        Args:
+            tokens: Raw extracted tokens
+            keep_identifier_detail: When True, do NOT collapse VAR_ASSIGN vs VAR_USE etc. and keep OP_/CMP_ granular.
+                This helps differentiate structurally similar but semantically different code.
+        """
+        normalized: List[str] = []
         for token in tokens:
-            # Group similar tokens
+            if keep_identifier_detail:
+                # Only collapse obvious noise (node types) but keep operator specificity
+                if token.startswith('NODE_'):
+                    normalized.append(token)
+                else:
+                    normalized.append(token)
+                continue
+            # Default aggressive normalization
             if token.startswith('NODE_'):
                 normalized.append(token)
             elif 'LITERAL' in token:
@@ -252,5 +361,39 @@ class ASTTokenizer:
                 normalized.append('OPERATOR')
             else:
                 normalized.append(token)
-        
         return normalized
+
+    # ------------------------------------------------------------------
+    # Filtering utilities
+    # ------------------------------------------------------------------
+    def filter_tokens(self,
+                      tokens: List[str],
+                      remove_node_tokens: bool = False,
+                      remove_literals: bool = False,
+                      remove_operators: bool = False,
+                      remove_keywords: bool = False,
+                      min_token_length: int = 0) -> List[str]:
+        """Filter token list based on several configurable criteria.
+
+        Args:
+            tokens: List of tokens (already normalized or raw)
+            remove_node_tokens: Drop tokens starting with 'NODE_'
+            remove_literals: Drop literal related markers
+            remove_operators: Drop operator markers
+            remove_keywords: Drop python keywords (exact match, lowercase)
+            min_token_length: Keep tokens whose length >= this value
+        """
+        filtered: List[str] = []
+        for tok in tokens:
+            if remove_node_tokens and tok.startswith('NODE_'):
+                continue
+            if remove_literals and (tok in self.literal_markers):
+                continue
+            if remove_operators and (tok in self.operator_markers or tok.startswith('OP_') or tok.startswith('CMP_')):
+                continue
+            if remove_keywords and tok.lower() in self.python_keywords:
+                continue
+            if min_token_length and len(tok) < min_token_length:
+                continue
+            filtered.append(tok)
+        return filtered
