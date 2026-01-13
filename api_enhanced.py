@@ -42,7 +42,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-"""Refactored: PRESETS & multi-file pipeline dipindah ke modul core.*"""
+"""Refactored: Single SETTINGS configuration & multi-file pipeline dipindah ke modul core.*"""
 
 # =============================
 # Global State (API-level)
@@ -50,9 +50,13 @@ app.add_middleware(
 analysis_results = {}
 
 # Import konfigurasi & pipeline eksternal
-from core.preset_config import PRESETS
+from core.preset_config import get_settings, get_threshold
 from core.multi_file_analysis import run_multi_file_analysis, last_similarity_matrix, last_similarity_feature_names
 from core.github_task import run_github_analysis_background
+from core.github_task import run_github_account_crossrepo_background
+from core.github_task import run_github_crossrepo_urls_background
+from core.github_task import run_github_pair_detail_background
+from core.cross_project_task import run_cross_project_analysis_background
 
 ###############################################
 # (Pipeline helper dipindah ke core.multi_file_analysis)
@@ -61,25 +65,30 @@ from core.github_task import run_github_analysis_background
 ###############################################
 # Endpoint: Preset listing
 ###############################################
-@app.get("/analyze/presets", summary="Daftar preset konfigurasi")
-async def list_presets():
-    return {"presets": {name: {"description": data['description'], "default_threshold": data['default_threshold'], "params": data['params']} for name, data in PRESETS.items()}}
+@app.get("/analyze/settings", summary="Daftar pengaturan konfigurasi")
+async def list_settings():
+    settings = get_settings()
+    return {
+        "settings": {
+            "description": "Single unified configuration for plagiarism detection",
+            "default_threshold": settings['threshold'],
+            "params": settings
+        }
+    }
 
 ###############################################
 # Endpoint: Compare with preset
 ###############################################
-@app.post("/analyze/compare_preset", summary="Bandingkan banyak file dengan preset")
-async def compare_with_preset(
-    preset: str = Form(..., description="Nama preset: strict | balanced | permissive"),
+@app.post("/analyze/compare", summary="Bandingkan banyak file dengan pengaturan")
+async def compare_files(
     threshold: Optional[float] = Form(None, description="Override threshold (opsional)"),
     explain: bool = Form(False),
     explain_top_k: int = Form(5),
-    files: List[UploadFile] = File(...)
+    files: List[UploadFile] = File(...),
+    tolerate_invalid_python: bool = Form(False, description="Jika True, lanjut meski ada file .py tidak valid (fallback).")
 ):
-    if preset not in PRESETS:
-        raise HTTPException(status_code=404, detail=f"Preset '{preset}' tidak ditemukan")
-    preset_cfg = PRESETS[preset]
-    th = threshold if threshold is not None else preset_cfg['default_threshold']
+    settings = get_settings()
+    th = threshold if threshold is not None else settings['threshold']
     file_contents = []
     for f in files:
         code = (await f.read()).decode(errors='ignore')
@@ -87,9 +96,19 @@ async def compare_with_preset(
             file_contents.append((f.filename, code))
     if len(file_contents) < 2:
         raise HTTPException(status_code=400, detail="Minimal 2 file valid diperlukan.")
-    logger.info(f"Applying preset '{preset}' threshold={th} params={preset_cfg['params']}")
-    result = run_multi_file_analysis(file_contents, preset_cfg['params'], th, explain, explain_top_k)
-    result['preset'] = preset
+    # Validate Python files syntax
+    invalid_py = []
+    tokenizer = ASTTokenizer()
+    for name, code in file_contents:
+        if name.lower().endswith('.py') and not tokenizer.is_valid_python_syntax(code):
+            invalid_py.append(name)
+    if invalid_py and not tolerate_invalid_python:
+        raise HTTPException(status_code=400, detail={"message": "Ditemukan file Python tidak valid secara sintaks.", "files": invalid_py, "hint": "Perbaiki indentasi/struktur blok sebelum analisis."})
+    logger.info(f"Applying settings threshold={th} params={settings}")
+    result = run_multi_file_analysis(file_contents, settings, th, explain, explain_top_k)
+    if invalid_py:
+        result['warnings'] = [f"File Python tidak valid: {', '.join(invalid_py)} (analisis dilanjutkan dengan fallback)"]
+    result['settings_applied'] = settings
     return result
 
 ###############################################
@@ -120,38 +139,36 @@ async def get_analysis_status(analysis_id: str):
         raise HTTPException(status_code=404, detail="Analysis ID tidak ditemukan")
     return analysis_results[analysis_id]
 
-@app.post("/analyze/github", summary="Analisis repository GitHub (mendukung preset)")
+@app.post("/analyze/github", summary="Analisis repository GitHub")
 async def analyze_github_repository(
     github_url: str = Form(..., description="URL repository GitHub"),
-    threshold: float = Form(0.7, description="Ambang batas similarity"),
-    preset: Optional[str] = Form('strict', description="Preset (strict|balanced|permissive)"),
+    threshold: Optional[float] = Form(None, description="Ambang batas similarity (default dari settings)"),
     explain: bool = Form(False, description="Aktifkan explain mode"),
     explain_top_k: int = Form(5, description="Top fitur saat explain"),
     skip_matrices: bool = Form(False, description="Jika True, sembunyikan similarityMatrix & tfidf dari hasil untuk mengurangi payload besar")
 ):
     if not github_url.startswith('https://github.com/'):
         raise HTTPException(status_code=400, detail="URL harus berupa repository GitHub yang valid")
-    if preset and preset not in PRESETS:
-        raise HTTPException(status_code=404, detail=f"Preset '{preset}' tidak ditemukan")
-    cfg = PRESETS[preset]['params'] if preset else None
+    settings = get_settings()
+    th = threshold if threshold is not None else get_threshold()
     analysis_id = str(uuid.uuid4())
     analysis_results[analysis_id] = {
         'status': 'processing',
         'started_at': datetime.now().isoformat(),
         'repository_url': github_url,
         'type': 'github_repository',
-        'preset': preset,
-        'threshold': threshold
+        'settings_applied': settings,
+        'threshold': th
     }
     # Jalankan task background via modul eksternal
     from core.github_task import run_github_analysis_background  # local import to avoid circular (if any)
-    asyncio.create_task(run_github_analysis_background(analysis_results, analysis_id, github_url, threshold, cfg, explain, explain_top_k, skip_matrices))
+    asyncio.create_task(run_github_analysis_background(analysis_results, analysis_id, github_url, th, settings, explain, explain_top_k, skip_matrices))
     return {
         'analysis_id': analysis_id,
         'status': 'started',
         'message': 'Analisis repository GitHub dimulai',
         'repository_url': github_url,
-        'preset': preset,
+        'settings_applied': settings,
         'skip_matrices': skip_matrices
     }
 
@@ -171,62 +188,50 @@ class ManualAnalysisRequest(BaseModel):
     code2: str = Field(..., description="Kode sumber kedua")
     lang1: str = Field('python', description="Bahasa kode pertama (python/javascript)")
     lang2: str = Field('python', description="Bahasa kode kedua (python/javascript)")
-    threshold: float = Field(0.7, description="Ambang batas kemiripan (0-1)")
+    threshold: Optional[float] = Field(None, description="Ambang batas kemiripan (default dari settings)")
     min_tokens: int = Field(1, description="Minimum token yang digunakan dalam analisis")
-    preset: Optional[str] = Field('strict', description="Nama preset (strict|balanced|permissive) untuk menerapkan konfigurasi token & TF-IDF.")
     explain: bool = Field(False, description="Aktifkan explain mode untuk melihat top fitur.")
     explain_top_k: int = Field(5, description="Jumlah fitur teratas saat explain mode.")
+    tolerate_invalid_python: bool = Field(False, description="Jika True, lanjutkan analisis meskipun sintaks Python tidak valid (gunakan fallback).")
 
 @app.post("/analyze/manual", summary="Analisis manual dua kode", response_description="Hasil analisis kemiripan dua kode")
 async def analyze_manual_code(payload: ManualAnalysisRequest = Body(...)):
-    """Analisis dua kode sumber secara manual. Sekarang mendukung preset untuk konsistensi dengan endpoint multi-file."""
+    """Analisis dua kode sumber secara manual menggunakan settings default."""
     try:
         if not payload.code1.strip() or not payload.code2.strip():
             return {"error": "Kode tidak boleh kosong."}
-        threshold = float(payload.threshold)
-        # Jika preset diberikan gunakan pipeline lengkap reuse helper
-        if payload.preset:
-            preset_name = payload.preset
-            if preset_name not in PRESETS:
-                return {"error": f"Preset '{preset_name}' tidak ditemukan."}
-            cfg = PRESETS[preset_name]['params']
-            # Bangun pseudo filename agar deteksi bahasa sesuai
-            fname1 = f"manual1.{ 'py' if payload.lang1=='python' else ('js' if payload.lang1=='javascript' else 'py')}"
-            fname2 = f"manual2.{ 'py' if payload.lang2=='python' else ('js' if payload.lang2=='javascript' else 'py')}"
-            result = run_multi_file_analysis(
-                [(fname1, payload.code1), (fname2, payload.code2)],
-                cfg,
-                threshold,
-                payload.explain,
-                payload.explain_top_k
-            )
-            result['preset'] = preset_name
-            return result
-        # Tanpa preset: jalankan pipeline sederhana (legacy behaviour)
+        threshold = payload.threshold if payload.threshold is not None else get_threshold()
+        warnings = []
         tokenizer = ASTTokenizer()
-        tokens1 = tokenizer.tokenize_code(payload.code1, payload.lang1)
-        tokens2 = tokenizer.tokenize_code(payload.code2, payload.lang2)
-        if len(tokens1) < payload.min_tokens or len(tokens2) < payload.min_tokens:
-            return {"error": f"Jumlah token kurang dari minimum ({payload.min_tokens})"}
-        vectorizer = TFIDFVectorizer()
-        vectorizer.fit([tokens1, tokens2])
-        tfidf_matrix = vectorizer.transform([tokens1, tokens2])
-        similarity_calc = CosineSimilarityCalculator()
-        similarity = similarity_calc.calculate_similarity(tfidf_matrix[0], tfidf_matrix[1])
-        status = "Plagiat" if similarity >= threshold else ("Mirip" if similarity >= 0.5 else "Aman")
-        return {
-            "filesCount": 2,
-            "comparisons": 1,
-            "plagiarismCount": 1 if similarity >= threshold else 0,
-            "comparisonsDetail": [{
-                "file1": f"manual1.{payload.lang1}",
-                "file2": f"manual2.{payload.lang2}",
-                "similarity": similarity,
-                "status": status,
-                "plagiarizedFragment": None
-            }],
-            "similarityScores": [similarity]
-        }
+        # Validasi sintaks Python sebelum analisis
+        if payload.lang1 == 'python' and not tokenizer.is_valid_python_syntax(payload.code1):
+            msg = "Kode manual1.py tidak valid sebagai Python (periksa indentasi/struktur)."
+            if not payload.tolerate_invalid_python:
+                raise HTTPException(status_code=400, detail={"message": msg, "hint": "Perbaiki indentasi blok setelah def/if/for, dsb.", "file": "manual1.py"})
+            warnings.append(msg)
+        if payload.lang2 == 'python' and not tokenizer.is_valid_python_syntax(payload.code2):
+            msg = "Kode manual2.py tidak valid sebagai Python (periksa indentasi/struktur)."
+            if not payload.tolerate_invalid_python:
+                raise HTTPException(status_code=400, detail={"message": msg, "hint": "Perbaiki indentasi blok setelah def/if/for, dsb.", "file": "manual2.py"})
+            warnings.append(msg)
+        # Gunakan pipeline lengkap reuse helper
+        settings = get_settings()
+        # Bangun pseudo filename agar deteksi bahasa sesuai
+        def _ext_for_lang(lang: str) -> str:
+            return 'py' if lang=='python' else ('ts' if lang=='typescript' else 'js')
+        fname1 = f"manual1.{ _ext_for_lang(payload.lang1) }"
+        fname2 = f"manual2.{ _ext_for_lang(payload.lang2) }"
+        result = run_multi_file_analysis(
+            [(fname1, payload.code1), (fname2, payload.code2)],
+            settings,
+            threshold,
+            payload.explain,
+            payload.explain_top_k
+        )
+        result['settings_applied'] = settings
+        if warnings:
+            result['warnings'] = warnings
+        return result
     except Exception as e:
         logger.error(f"Error in manual code analysis: {str(e)}")
         return {"error": str(e), "detail": "Gagal menganalisis kode. Pastikan input sudah benar dan kode tidak kosong."}
@@ -236,11 +241,10 @@ async def analyze_manual_code(payload: ManualAnalysisRequest = Body(...)):
 from fastapi import UploadFile
 from typing import List
 
-@app.post("/analyze/compare", summary="Bandingkan banyak file", response_description="Hasil analisis kemiripan multi-file")
-async def compare_multiple_files(
+@app.post("/analyze/compare_detailed", summary="Bandingkan banyak file dengan parameter detail", response_description="Hasil analisis kemiripan multi-file")
+async def compare_multiple_files_detailed(
     files: List[UploadFile] = File(..., description="File kode sumber yang diupload"),
-    threshold: float = Form(0.7, description="Ambang batas kemiripan (0-1)"),
-    preset: Optional[str] = Form('strict', description="Nama preset (strict|balanced|permissive) untuk langsung menerapkan konfigurasi"),
+    threshold: Optional[float] = Form(None, description="Ambang batas kemiripan (default dari settings)"),
     min_tokens: int = Form(1, description="Minimum token yang digunakan dalam analisis"),
     # Token filtering options
     remove_node_tokens: bool = Form(False, description="Hilangkan token tipe NODE_"),
@@ -261,46 +265,70 @@ async def compare_multiple_files(
     explain_top_k: int = Form(5, description="Jumlah fitur top per pasangan ketika explain mode"),
     structural_weight: float = Form(1.0, description="Faktor pengurang bobot token struktural (0-1, misal 0.3)"),
     var_weight: float = Form(1.0, description="Faktor bobot khusus untuk token variabel VAR_USE / VAR_ASSIGN (0-1)"),
-    operator_weight: float = Form(1.0, description="Faktor bobot untuk token operator (OP_, CMP_, BINARY_OP, OPERATOR) (0-1)")
+    operator_weight: float = Form(1.0, description="Faktor bobot untuk token operator (OP_, CMP_, BINARY_OP, OPERATOR) (0-1)"),
+    tolerate_invalid_python: bool = Form(False, description="Jika True, lanjut meski ada file .py tidak valid (fallback).")
 ):
     """
-    Bandingkan banyak file kode sumber untuk deteksi plagiarisme.
+    Bandingkan banyak file kode sumber untuk deteksi plagiarisme dengan parameter detail.
     Cocok untuk integrasi API website lain.
     """
     if len(files) < 2:
         raise HTTPException(status_code=400, detail="Minimal 2 file diperlukan untuk analisis.")
-    # Jika preset dipakai gunakan helper agar konsisten
-    if preset:
-        if preset not in PRESETS:
-            raise HTTPException(status_code=404, detail=f"Preset '{preset}' tidak ditemukan")
-        preset_cfg = PRESETS[preset]
-        th = threshold if threshold is not None else preset_cfg['default_threshold']
-        file_contents = []
-        for f in files:
-            code = (await f.read()).decode(errors='ignore')
-            if code.strip():
-                file_contents.append((f.filename, code))
-        if len(file_contents) < 2:
-            raise HTTPException(status_code=400, detail="Minimal 2 file valid diperlukan.")
-        result = run_multi_file_analysis(file_contents, preset_cfg['params'], th, explain, explain_top_k)
-        result['preset'] = preset
-        return result
+    # Gunakan settings default dengan override parameter yang ada
+    settings = get_settings()
+    th = threshold if threshold is not None else get_threshold()
     file_contents = []
     for f in files:
-        content = (f.filename, (await f.read()).decode(errors='ignore'))
-        file_contents.append(content)
-    # Hanya file yang tidak kosong
-    file_contents = [(name, code) for name, code in file_contents if code.strip()]
+        code = (await f.read()).decode(errors='ignore')
+        if code.strip():
+            file_contents.append((f.filename, code))
     if len(file_contents) < 2:
         raise HTTPException(status_code=400, detail="Minimal 2 file valid diperlukan.")
-    # Modular pipeline (non-preset manual path)
+    # Validate Python syntax
+    invalid_py = []
     tokenizer = ASTTokenizer()
-    # Deteksi bahasa dari ekstensi file
-    langs = []
+    for name, code in file_contents:
+        if name.lower().endswith('.py') and not tokenizer.is_valid_python_syntax(code):
+            invalid_py.append(name)
+    if invalid_py and not tolerate_invalid_python:
+        raise HTTPException(status_code=400, detail={"message": "Ditemukan file Python tidak valid secara sintaks.", "files": invalid_py, "hint": "Perbaiki indentasi/struktur blok sebelum analisis."})
+    
+    # Override settings dengan parameter yang diberikan
+    custom_settings = settings.copy()
+    custom_settings.update({
+        'min_tokens': min_tokens,
+        'remove_node_tokens': remove_node_tokens,
+        'remove_literals': remove_literals,
+        'remove_operators': remove_operators,
+        'remove_keywords': remove_keywords,
+        'min_token_length': min_token_length,
+        'keep_identifier_detail': keep_identifier_detail,
+        'tf_min_df': tf_min_df,
+        'tf_max_df': tf_max_df,
+        'tf_sublinear_tf': tf_sublinear_tf,
+        'tf_use_idf': tf_use_idf,
+        'tf_smooth_idf': tf_smooth_idf,
+        'tf_norm': tf_norm,
+        'tf_max_features': tf_max_features,
+        'structural_weight': structural_weight,
+        'var_weight': var_weight,
+        'operator_weight': operator_weight
+    })
+    
+    result = run_multi_file_analysis(file_contents, custom_settings, th, explain, explain_top_k)
+    if invalid_py:
+        result['warnings'] = [f"File Python tidak valid: {', '.join(invalid_py)} (analisis dilanjutkan dengan fallback)"]
+    result['settings_applied'] = custom_settings
+    return result
+
+###############################################
+# Endpoint: GitHub analisis cross repositories  
+###############################################
     tokens_list = []
+    processed_names = []
     for name, code in file_contents:
         ext = name.split('.')[-1].lower()
-        lang = 'python' if ext == 'py' else ('javascript' if ext in ['js', 'jsx', 'ts', 'tsx'] else 'python')
+        lang = 'python' if ext == 'py' else ('typescript' if ext in ['ts','tsx'] else ('javascript' if ext in ['js','jsx'] else 'python'))
         langs.append(lang)
         raw_tokens = tokenizer.tokenize_code(code, lang)
         normalized_tokens = tokenizer.normalize_tokens(raw_tokens, keep_identifier_detail=keep_identifier_detail)
@@ -316,6 +344,7 @@ async def compare_multiple_files(
         logger.info(f"Tokens for {name} (raw={len(raw_tokens)} normalized={len(normalized_tokens)} kept={len(tokens)}): {tokens}")
         if len(tokens) >= 1:
             tokens_list.append(tokens)
+            processed_names.append(name)
         else:
             logger.warning(f"File {name} jumlah token kurang dari minimum setelah tokenisasi (min 1).")
     logger.info(f"Tokens list: {tokens_list}")
@@ -411,6 +440,14 @@ async def compare_multiple_files(
                     "similarity": sim,
                     "top_features": top_terms
                 })
+    # Prepare matrices and token payloads for UI
+    try:
+        similarity_matrix_list = similarity_matrix.astype(float).tolist()
+        tfidf_matrix_list = tfidf_matrix.astype(float).tolist()
+    except Exception:
+        similarity_matrix_list = similarity_matrix.tolist()
+        tfidf_matrix_list = tfidf_matrix.tolist()
+
     result = {
         "filesCount": filesCount,
         "comparisons": comparisons,
@@ -418,6 +455,17 @@ async def compare_multiple_files(
         "processingTime": "0.1",
         "comparisonsDetail": comparisons_detail,
         "similarityScores": similarityScores,
+        "similarityMatrix": similarity_matrix_list,
+        "fileNames": processed_names,
+        "tfidf": {
+            "featureNames": feature_names,
+            "matrix": tfidf_matrix_list
+        },
+        "astTokens": {
+            "files": [
+                {"file": processed_names[i], "tokens": tokens_list[i]} for i in range(len(processed_names))
+            ]
+        },
         "tuningConfig": {
             "threshold": threshold,
             "tokenFilters": {
@@ -441,6 +489,231 @@ async def compare_multiple_files(
         "structuralWeightApplied": structural_weight if 0 < structural_weight < 1.0 else None,
         "variableWeightApplied": var_weight if 0 < var_weight < 1.0 else None,
         "operatorWeightApplied": operator_weight if 0 < operator_weight < 1.0 else None,
-        "explain": explain_details if explain else None
+        "explain": explain_details if explain else None,
+        "warnings": [f"File Python tidak valid: {', '.join(invalid_py)} (analisis dilanjutkan dengan fallback)"] if invalid_py else None
     }
     return result
+
+###############################################
+# Endpoint: GitHub account cross-repo comparison
+###############################################
+@app.post("/analyze/github/account", summary="Bandingkan banyak repository dalam satu akun (cross-repo)")
+async def analyze_github_account_crossrepo(
+    username: str = Form(..., description="Username atau organisasi GitHub"),
+    threshold: Optional[float] = Form(None, description="Ambang batas similarity (default dari settings)"),
+    include_forks: bool = Form(False, description="Sertakan fork repos"),
+    max_repos: int = Form(5, description="Batas jumlah repo yang dianalisis"),
+    token: Optional[str] = Form(None, description="GitHub token (opsional) untuk akses rate limit lebih longgar / private repos"),
+    explain: bool = Form(False, description="Aktifkan explain mode (tidak digunakan untuk agregasi repo)"),
+    explain_top_k: int = Form(5, description="Top fitur saat explain (tidak digunakan untuk agregasi repo)"),
+    skip_matrices: bool = Form(True, description="Sembunyikan matriks berat pada hasil")
+):
+    settings = get_settings()
+    th = threshold if threshold is not None else get_threshold()
+    analysis_id = str(uuid.uuid4())
+    analysis_results[analysis_id] = {
+        'status': 'processing',
+        'started_at': datetime.now().isoformat(),
+        'type': 'github_account_crossrepo',
+        'account': username,
+        'settings_applied': settings,
+        'threshold': th
+    }
+    asyncio.create_task(run_github_account_crossrepo_background(
+        analysis_results,
+        analysis_id,
+        username,
+        th,
+        settings,
+        explain,
+        explain_top_k,
+        skip_matrices,
+        include_forks,
+        max_repos,
+        token
+    ))
+    return {
+        'analysis_id': analysis_id,
+        'status': 'started',
+        'message': 'Analisis cross-repo akun GitHub dimulai',
+        'account': username,
+        'settings_applied': settings,
+        'include_forks': include_forks,
+        'max_repos': max_repos,
+        'skip_matrices': skip_matrices
+    }
+
+###############################################
+# Endpoint: Cross-Repository by URLs
+###############################################
+@app.post("/analyze/github/cross_urls", summary="Bandingkan beberapa repository berdasarkan daftar URL")
+async def analyze_github_cross_urls(
+    repo_urls: str = Form(..., description="Daftar URL GitHub, satu per baris"),
+    threshold: Optional[float] = Form(None, description="Ambang batas similarity (default dari settings)"),
+    explain: bool = Form(False, description="Aktifkan explain mode (tidak digunakan untuk agregasi repo)"),
+    explain_top_k: int = Form(5, description="Top fitur saat explain (tidak digunakan untuk agregasi repo)"),
+    skip_matrices: bool = Form(True, description="Sembunyikan matriks berat pada hasil")
+):
+    settings = get_settings()
+    th = threshold if threshold is not None else get_threshold()
+    urls = [u.strip() for u in repo_urls.splitlines() if u.strip()]
+    if len(urls) < 2:
+        raise HTTPException(status_code=400, detail="Minimal 2 URL repository diperlukan")
+    analysis_id = str(uuid.uuid4())
+    analysis_results[analysis_id] = {
+        'status': 'processing',
+        'started_at': datetime.now().isoformat(),
+        'type': 'github_crossrepo_urls',
+        'settings_applied': settings,
+        'threshold': th
+    }
+    asyncio.create_task(run_github_crossrepo_urls_background(
+        analysis_results,
+        analysis_id,
+        urls,
+        th,
+        settings,
+        explain,
+        explain_top_k,
+        skip_matrices
+    ))
+    return {
+        'analysis_id': analysis_id,
+        'status': 'started',
+        'message': 'Analisis cross-repo (URLs) dimulai',
+        'repo_urls': urls,
+        'settings_applied': settings,
+        'skip_matrices': skip_matrices
+    }
+
+###############################################
+# Endpoint: Repo pair detail (drill-down)
+###############################################
+@app.post("/analyze/github/pair_detail", summary="Analisis detail dua repository (matriks & token)")
+async def analyze_github_pair_detail(
+    repo_a_url: str = Form(..., description="URL repo GitHub A"),
+    repo_b_url: str = Form(..., description="URL repo GitHub B"),
+    threshold: Optional[float] = Form(None, description="Ambang batas similarity (default dari settings)"),
+    explain: bool = Form(False, description="Aktifkan explain mode"),
+    explain_top_k: int = Form(5, description="Top fitur saat explain"),
+    skip_matrices: bool = Form(False, description="Sembunyikan matriks pada hasil")
+):
+    if not (repo_a_url and repo_b_url and repo_a_url.startswith('https://github.com/') and repo_b_url.startswith('https://github.com/')):
+        raise HTTPException(status_code=400, detail="URL harus berupa repository GitHub yang valid")
+    settings = get_settings()
+    th = threshold if threshold is not None else get_threshold()
+    analysis_id = str(uuid.uuid4())
+    analysis_results[analysis_id] = {
+        'status': 'processing',
+        'started_at': datetime.now().isoformat(),
+        'type': 'github_pair_detail',
+        'repo_a_url': repo_a_url,
+        'repo_b_url': repo_b_url,
+        'settings_applied': settings,
+        'threshold': th
+    }
+    from core.github_task import run_github_pair_detail_background
+    asyncio.create_task(run_github_pair_detail_background(
+        analysis_results,
+        analysis_id,
+        repo_a_url,
+        repo_b_url,
+        th,
+        settings,
+        explain,
+        explain_top_k,
+        skip_matrices
+    ))
+    return {
+        'analysis_id': analysis_id,
+        'status': 'started',
+        'message': 'Analisis detail pasangan repository dimulai',
+        'repo_a_url': repo_a_url,
+        'repo_b_url': repo_b_url,
+        'skip_matrices': skip_matrices
+    }
+
+###############################################
+# Endpoint: Cross-Project Manual Upload
+###############################################
+@app.post("/analyze/cross_project", summary="Analisis cross-project dari upload manual")
+async def analyze_cross_project_manual(
+    files: List[UploadFile] = File(..., description="File kode sumber yang diupload (dengan struktur folder)"),
+    threshold: Optional[float] = Form(None, description="Ambang batas kemiripan (default dari settings)"),
+    explain: bool = Form(False, description="Aktifkan explain mode"),
+    explain_top_k: int = Form(5, description="Top fitur saat explain"),
+    skip_matrices: bool = Form(False, description="Sembunyikan matriks berat pada hasil"),
+    tolerate_invalid_python: bool = Form(False, description="Jika True, lanjut meski ada file .py tidak valid")
+):
+    """
+    Analisis cross-project dari upload manual.
+    Files akan digroup berdasarkan struktur folder (project1/file.py, project2/file.py)
+    dan dibandingkan seperti GitHub cross-repo analysis.
+    """
+    if len(files) < 2:
+        raise HTTPException(status_code=400, detail="Minimal 2 file diperlukan untuk analisis.")
+    
+    settings = get_settings()
+    th = threshold if threshold is not None else get_threshold()
+    
+    # Prepare file data
+    file_contents = []
+    for f in files:
+        try:
+            content = (await f.read()).decode(errors='ignore')
+            if content.strip():
+                # Use the full filename (including folder path) for project grouping
+                filename = f.filename or f"unknown_file_{len(file_contents)}"
+                file_contents.append((filename, content))
+        except Exception as e:
+            logger.warning(f"Error reading file {f.filename}: {e}")
+    
+    if len(file_contents) < 2:
+        raise HTTPException(status_code=400, detail="Minimal 2 file valid diperlukan.")
+    
+    # Validate Python syntax
+    invalid_py = []
+    if not tolerate_invalid_python:
+        tokenizer = ASTTokenizer()
+        for name, code in file_contents:
+            if name.lower().endswith('.py') and not tokenizer.is_valid_python_syntax(code):
+                invalid_py.append(name)
+        
+        if invalid_py:
+            raise HTTPException(status_code=400, detail={
+                "message": "Ditemukan file Python tidak valid secara sintaks.",
+                "files": invalid_py,
+                "hint": "Perbaiki indentasi/struktur blok atau aktifkan tolerate_invalid_python."
+            })
+    
+    analysis_id = str(uuid.uuid4())
+    analysis_results[analysis_id] = {
+        'status': 'processing',
+        'started_at': datetime.now().isoformat(),
+        'type': 'cross_project_manual',
+        'total_files': len(file_contents),
+        'settings_applied': settings,
+        'threshold': th
+    }
+    
+    # Start background analysis
+    asyncio.create_task(run_cross_project_analysis_background(
+        analysis_results,
+        analysis_id,
+        file_contents,
+        th,
+        settings,
+        explain,
+        explain_top_k,
+        skip_matrices
+    ))
+    
+    return {
+        'analysis_id': analysis_id,
+        'status': 'started',
+        'message': 'Analisis cross-project manual dimulai',
+        'total_files': len(file_contents),
+        'settings_applied': settings,
+        'skip_matrices': skip_matrices
+    }
+ 

@@ -122,3 +122,50 @@ class EnhancedPlagiarismDetector:
                     'plagiarizedFragment': None  # Placeholder for future fragment extraction
                 })
         return results
+
+    def detect_cross_repository_plagiarism(
+        self,
+        files_repo_a: List[tuple],
+        files_repo_b: List[tuple],
+        threshold: float = 0.7
+    ) -> List[Dict]:
+        """
+        Compare files between two repositories (A vs B) only.
+
+        Parameters
+        ----------
+        files_repo_a : List[Tuple[str, str]]
+            List of (filename, code) from repository A.
+        files_repo_b : List[Tuple[str, str]]
+            List of (filename, code) from repository B.
+        threshold : float, optional
+            Similarity threshold to flag plagiarism, by default 0.7.
+
+        Returns
+        -------
+        List[Dict]
+            Each dict contains:
+            {
+                'repo_a_file': str,
+                'repo_b_file': str,
+                'similarity': float,
+                'is_plagiarized': bool,
+                'details': dict
+            }
+        """
+        results: List[Dict] = []
+        if not files_repo_a or not files_repo_b:
+            logger.info("Cross-repo comparison received empty inputs; returning empty results")
+            return results
+
+        for name_a, code_a in files_repo_a:
+            for name_b, code_b in files_repo_b:
+                sim_result = self.analyze_similarity(code_a, code_b, threshold)
+                results.append({
+                    'repo_a_file': name_a,
+                    'repo_b_file': name_b,
+                    'similarity': float(sim_result.get('similarity_score', 0.0)),
+                    'is_plagiarized': bool(sim_result.get('is_plagiarism', False)),
+                    'details': sim_result
+                })
+        return results

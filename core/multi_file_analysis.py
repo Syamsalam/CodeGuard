@@ -49,10 +49,11 @@ def run_multi_file_analysis(
     """
     tokenizer = ASTTokenizer()
     tokens_list = []
+    tokens_per_file = []
     processed_names = []
     for idx_file, (name, code) in enumerate(file_contents, start=1):
         ext = name.split('.')[-1].lower()
-        lang = 'python' if ext == 'py' else ('javascript' if ext in ['js', 'jsx', 'ts', 'tsx'] else 'python')
+        lang = 'python' if ext == 'py' else ('typescript' if ext in ['ts', 'tsx'] else ('javascript' if ext in ['js', 'jsx'] else 'python'))
         raw_tokens = tokenizer.tokenize_code(code, lang)
         normalized_tokens = tokenizer.normalize_tokens(raw_tokens, keep_identifier_detail=cfg.get('keep_identifier_detail', False))
         # Optionally enrich with AST path n-grams (structural shingles)
@@ -124,8 +125,9 @@ def run_multi_file_analysis(
         )
         if filtered_tokens:
             tokens_list.append(filtered_tokens)
+            tokens_per_file.append({'file': name, 'tokens': filtered_tokens})
             processed_names.append(name)
-        logger.info(f"[preset] Tokens for {name}: kept={len(filtered_tokens)} tokens")
+        logger.info(f"[settings] Tokens for {name}: kept={len(filtered_tokens)} tokens")
         if progress_cb:
             # Laporkan jumlah file yang sudah diproses (setelah filtering) dibanding total
             progress_cb(idx_file, len(file_contents))
@@ -254,6 +256,9 @@ def run_multi_file_analysis(
         "tfidf": {
             "featureNames": feature_names,
             "matrix": tfidf_matrix_list
+        },
+        "astTokens": {
+            "files": tokens_per_file
         },
         "structuralWeightApplied": structural_weight if 0 < structural_weight < 1.0 else None,
         "variableWeightApplied": var_weight if 0 < var_weight < 1.0 else None,

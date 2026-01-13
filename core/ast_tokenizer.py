@@ -4,6 +4,7 @@ Supports Python and JavaScript through tree-sitter parsing.
 """
 
 import ast
+import textwrap
 import re
 from typing import List, Dict, Optional, Any, Set
 import hashlib
@@ -13,7 +14,7 @@ import tree_sitter
 
 class ASTTokenizer:
     def __init__(self):
-        self.supported_languages = ['python', 'javascript']
+        self.supported_languages = ['python', 'javascript', 'typescript']
         self._parsers = {}
         self._initialize_parsers()
         # Pre-computed sets for filtering
@@ -28,15 +29,31 @@ class ASTTokenizer:
         try:
             import tree_sitter_python
             import tree_sitter_javascript
-            
+            # Optional TypeScript
+            try:
+                import tree_sitter_typescript
+            except ImportError:
+                tree_sitter_typescript = None
+
             # Python parser
             python_language = tree_sitter.Language(tree_sitter_python.language())
             self._parsers['python'] = tree_sitter.Parser(python_language)
-            
+
             # JavaScript parser
             js_language = tree_sitter.Language(tree_sitter_javascript.language())
             self._parsers['javascript'] = tree_sitter.Parser(js_language)
-            
+
+            # TypeScript parser (if available)
+            if tree_sitter_typescript is not None:
+                try:
+                    ts_lang = tree_sitter.Language(tree_sitter_typescript.language_typescript())
+                    self._parsers['typescript'] = tree_sitter.Parser(ts_lang)
+                except Exception:
+                    try:
+                        ts_lang = tree_sitter.Language(tree_sitter_typescript.language())
+                        self._parsers['typescript'] = tree_sitter.Parser(ts_lang)
+                    except Exception:
+                        pass
         except ImportError as e:
             print(f"Warning: Tree-sitter languages not available: {e}")
             self._parsers = {}
@@ -98,6 +115,8 @@ class ASTTokenizer:
             return self._tokenize_python(cleaned_code)
         elif language == 'javascript':
             return self._tokenize_javascript(cleaned_code)
+        elif language == 'typescript':
+            return self._tokenize_typescript(cleaned_code)
         
         return []
 
@@ -138,7 +157,7 @@ class ASTTokenizer:
             n_max = n_min
         if not code.strip():
             return []
-        if language not in ('python','javascript'):
+        if language not in ('python','javascript','typescript'):
             return []
         paths: List[List[str]] = []
         try:
@@ -154,10 +173,11 @@ class ASTTokenizer:
                         _walk(child, new_path)
                 _walk(tree, [])
             else:
-                # Use tree-sitter for JS if available
-                if 'javascript' not in self._parsers:
+                # Use tree-sitter for JS/TS if available
+                lang_key = language if language in self._parsers else ('javascript' if 'javascript' in self._parsers else None)
+                if not lang_key:
                     return []
-                parser = self._parsers['javascript']
+                parser = self._parsers[lang_key]
                 t = parser.parse(bytes(code,'utf8'))
                 def _walk_ts(node, current):
                     node_type = node.type
@@ -196,8 +216,8 @@ class ASTTokenizer:
             '.py': 'python',
             '.js': 'javascript',
             '.jsx': 'javascript',
-            '.ts': 'javascript',
-            '.tsx': 'javascript'
+            '.ts': 'typescript',
+            '.tsx': 'typescript'
         }
         return extension_map.get(file_path.suffix.lower())
     
@@ -214,8 +234,27 @@ class ASTTokenizer:
         code = re.sub(r'""".*?"""', '', code, flags=re.DOTALL)
         code = re.sub(r"'''.*?'''", '', code, flags=re.DOTALL)
 
+        # Dedent to avoid leading indentation breaking Python AST parsing
+        # (common when code is embedded in triple-quoted strings)
+        try:
+            code = textwrap.dedent(code)
+        except Exception:
+            pass
+
         # Do NOT collapse all whitespace to single spaces to preserve indentation for Python
         return code.strip('\n')
+
+    def is_valid_python_syntax(self, code: str) -> bool:
+        """Quickly validate Python syntax after dedent.
+
+        Returns True if ast.parse succeeds, otherwise False.
+        """
+        try:
+            code_d = textwrap.dedent(code)
+            ast.parse(code_d)
+            return True
+        except Exception:
+            return False
     
     def _tokenize_python(self, code: str) -> List[str]:
         """Tokenize Python code using built-in AST module"""
@@ -232,10 +271,38 @@ class ASTTokenizer:
         return tokens
     
     def _tokenize_javascript(self, code: str) -> List[str]:
-        """Tokenize JavaScript code using tree-sitter"""
+        """Tokenize JavaScript code using tree-sitter or lightweight fallback"""
         if 'javascript' in self._parsers:
             return self._tokenize_with_tree_sitter(code, 'javascript')
-        return []
+        return self._tokenize_js_like_fallback(code)
+
+    def _tokenize_typescript(self, code: str) -> List[str]:
+        """Tokenize TypeScript using tree-sitter if available, otherwise fallback"""
+        if 'typescript' in self._parsers:
+            return self._tokenize_with_tree_sitter(code, 'typescript')
+        return self._tokenize_js_like_fallback(code)
+
+    def _tokenize_js_like_fallback(self, code: str) -> List[str]:
+        """Lightweight regex-based tokenization for JS/TS when parser unavailable."""
+        tokens: List[str] = []
+        # Function and class definitions
+        tokens += ["FUNC_DEF"] * len(re.findall(r"\bfunction\b|=>", code))
+        tokens += ["CLASS_DEF"] * len(re.findall(r"\bclass\b", code))
+        # Identifiers (rough)
+        tokens += ["IDENTIFIER"] * len(re.findall(r"\b[A-Za-z_][A-Za-z0-9_]*\b", code))
+        # Literals
+        tokens += ["NUM_LITERAL"] * len(re.findall(r"\b\d+(?:\.\d+)?\b", code))
+        tokens += ["STR_LITERAL"] * len(re.findall(r"(['\"]).*?\1", code))
+        tokens += ["BOOL_LITERAL"] * len(re.findall(r"\btrue\b|\bfalse\b", code))
+        # Operators
+        tokens += ["BINARY_OP"] * len(re.findall(r"[+\-*/=]+", code))
+        # Control flow keywords (add as plain markers)
+        for kw in ["if","else","for","while","return","switch","case","break","continue","try","catch","finally","import","from","export","async","await","let","const","var"]:
+            tokens.append(kw)
+        # Rough node markers for visual similarity
+        tokens += ["NODE_FunctionDef"] * len(re.findall(r"\bfunction\b", code))
+        tokens += ["NODE_ClassDef"] * len(re.findall(r"\bclass\b", code))
+        return tokens
     
     def _extract_python_tokens(self, node: ast.AST) -> List[str]:
         """Recursively extract tokens from Python AST"""
@@ -299,34 +366,58 @@ class ASTTokenizer:
         tree = parser.parse(bytes(code, 'utf8'))
         
         tokens = []
-        self._extract_tree_sitter_tokens(tree.root_node, tokens)
+        self._extract_tree_sitter_tokens(tree.root_node, tokens, language)
         
         return tokens
     
-    def _extract_tree_sitter_tokens(self, node: Any, tokens: List[str]) -> None:
-        """Recursively extract tokens from tree-sitter AST"""
-        # Add node type as token
-        tokens.append(f"NODE_{node.type}")
-        
+    def _extract_tree_sitter_tokens(self, node: Any, tokens: List[str], language: str) -> None:
+        """Recursively extract tokens from tree-sitter AST with light harmonization.
+
+        For Python grammar, harmonize common node names to Python AST-style labels
+        to reduce vocabulary drift (e.g., module->Module, function_definition->FunctionDef).
+        """
+        raw_type = node.type
+        mapped_type = raw_type
+        if language == 'python':
+            py_map = {
+                'module': 'Module',
+                'function_definition': 'FunctionDef',
+                'class_definition': 'ClassDef',
+                'parameters': 'arguments',
+                'argument_list': 'arguments',
+                'return_statement': 'Return',
+                'binary_operator': 'BinOp',
+                'comparison_operator': 'Compare',
+                'call': 'Call',
+                'identifier': 'Name',
+                'attribute': 'Attribute',
+            }
+            mapped_type = py_map.get(raw_type, raw_type)
+        # Add node token
+        tokens.append(f"NODE_{mapped_type}")
+
         # Handle specific node types for normalization
-        if node.type in ['identifier', 'property_identifier']:
+        if raw_type in ['identifier', 'property_identifier']:
+            # Tree-sitter cannot infer VAR_USE/VAR_ASSIGN without context; use generic
             tokens.append("IDENTIFIER")
-        elif node.type in ['string', 'string_literal']:
+        elif raw_type in ['string', 'string_literal']:
             tokens.append("STR_LITERAL")
-        elif node.type in ['number', 'numeric_literal']:
+        elif raw_type in ['number', 'numeric_literal']:
             tokens.append("NUM_LITERAL")
-        elif node.type in ['true', 'false', 'boolean']:
+        elif raw_type in ['true', 'false', 'boolean']:
             tokens.append("BOOL_LITERAL")
-        elif node.type == 'function_declaration':
+        # Function/class markers for JS + Python TS
+        if raw_type in ['function_declaration', 'function_definition']:
             tokens.append("FUNC_DEF")
-        elif node.type == 'class_declaration':
+        if raw_type in ['class_declaration', 'class_definition']:
             tokens.append("CLASS_DEF")
-        elif 'binary' in node.type:
+        # Operator markers
+        if 'binary' in raw_type:
             tokens.append("BINARY_OP")
-        
-        # Recursively process children
+
+        # Recurse
         for child in node.children:
-            self._extract_tree_sitter_tokens(child, tokens)
+            self._extract_tree_sitter_tokens(child, tokens, language)
     
     def get_token_statistics(self, tokens: List[str]) -> Dict[str, int]:
         """Get frequency statistics for tokens"""

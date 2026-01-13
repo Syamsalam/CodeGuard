@@ -98,6 +98,19 @@
         .demo-section {
             background: white;
             border-radius: 10px;
+
+        /* Disabled threshold styling */
+        .form-range:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background-color: #f8f9fa;
+        }
+        
+        .threshold-disabled-note {
+            color: #6c757d;
+            font-size: 0.85rem;
+            font-style: italic;
+        }
             padding: 2rem;
             margin: 2rem 0;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -213,7 +226,238 @@
         .cg-matrix-table tbody th { background:#f8fafc; }
         .cg-section-collapsed { display:none; }
         .cg-note { font-size:0.65rem; color:#64748b; margin-top:4px; }
-    </style>
+        /* Enhanced cross project modal styles */
+        .pair-detail-modal {
+            display: none;
+            position: fixed;
+            z-index: 1055;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .pair-detail-content {
+            position: relative;
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .modal-close:hover {
+            color: #dc3545;
+        }
+        
+        /* Enhanced Cross Project Table Styles */
+        .enhanced-cross-project-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+        
+        .enhanced-table-wrapper {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            overflow-x: auto;
+        }
+        
+        .enhanced-table {
+            margin-bottom: 0;
+            font-size: 0.9rem;
+            width: 100%;
+            min-width: 1200px;
+        }
+        
+        .enhanced-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%) !important;
+        }
+        
+        .enhanced-header th {
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 1rem 0.75rem;
+            vertical-align: middle;
+        }
+        
+        .enhanced-row {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .enhanced-row:hover {
+            transform: scale(1.001);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .project-pair-cell {
+            padding: 0.5rem 0;
+        }
+        
+        .project-names-enhanced {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.25rem;
+        }
+        
+        .project-badge-a, .project-badge-b {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .project-badge-b {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #333;
+        }
+        
+        .similarity-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .similarity-badge-large {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            min-width: 80px;
+        }
+        
+        .similarity-bar-container {
+            width: 60px;
+            height: 4px;
+            background-color: #e9ecef;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .similarity-bar {
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+        
+        .avg-similarity {
+            font-weight: 600;
+            color: #495057;
+            font-size: 1rem;
+        }
+        
+        .status-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .risk-indicator {
+            width: 20px;
+            height: 4px;
+            border-radius: 2px;
+        }
+        
+        .risk-indicator.danger {
+            background: linear-gradient(90deg, #dc3545, #c82333);
+        }
+        
+        .risk-indicator.warning {
+            background: linear-gradient(90deg, #ffc107, #e0a800);
+        }
+        
+        .risk-indicator.success {
+            background: linear-gradient(90deg, #28a745, #1e7e34);
+        }
+        
+        .breakdown-cell {
+            padding: 0.75rem 0.5rem;
+        }
+        
+        .top-pairs-cell {
+            font-size: 0.85rem;
+        }
+        
+        .action-buttons-enhanced {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .detail-btn {
+            border-radius: 20px;
+            font-size: 0.8rem;
+            padding: 0.375rem 0.75rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .detail-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Additional responsive styles */
+        @media (max-width: 768px) {
+            .project-names-enhanced {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .project-names-enhanced .fas {
+                transform: rotate(90deg);
+            }
+            
+            .action-buttons-enhanced {
+                flex-direction: row;
+                gap: 0.5rem;
+            }
+            
+            .detail-btn {
+                font-size: 0.7rem;
+                padding: 0.25rem 0.5rem;
+            }
+            
+            .pair-detail-content {
+                width: 95%;
+                margin: 2% auto;
+                padding: 1rem;
+            }
+        }\n    </style>
 </head>
 <body>
     <!-- Navigation -->
@@ -303,6 +547,11 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" id="cross-project-tab" data-bs-toggle="pill" href="#cross-project">
+                        <i class="fas fa-layer-group"></i> Cross-Project
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" id="github-tab" data-bs-toggle="pill" href="#github">
                         <i class="fab fa-github"></i> GitHub Repo
                     </a>
@@ -317,9 +566,9 @@
                         <div class="col-md-6">
                             <h5><i class="fas fa-cloud-upload-alt"></i> Upload Source Files</h5>
                             <div class="mb-3">
-                                <input type="file" class="form-control" id="fileUpload" multiple accept=".py,.js,.jsx,.ts">
+                                <input type="file" class="form-control" id="fileUpload" multiple accept=".py,.js,.jsx,.ts,.tsx">
                                 <small class="form-text text-muted">
-                                    Supported: Python (.py), JavaScript (.js, .jsx, .ts)
+                                    Supported: Python (.py), JavaScript (.js, .jsx), TypeScript (.ts, .tsx)
                                 </small>
                             </div>
                             <button class="btn btn-primary" onclick="analyzeUploadedFiles()">
@@ -330,7 +579,8 @@
                             <h5><i class="fas fa-cog"></i> Detection Settings</h5>
                             <div class="mb-3">
                                 <label class="form-label">Ambang Batas: <span id="thresholdValue">70%</span></label>
-                                <input type="range" class="form-range" id="thresholdRange" min="0" max="1" step="0.05" value="0.70" onchange="updateThreshold()">
+                                <input type="range" class="form-range" id="thresholdRange" min="0" max="1" step="0.05" value="0.70" onchange="updateThreshold()" disabled readonly>
+                                <small class="text-muted">Threshold telah ditetapkan dan tidak dapat diubah</small>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Minimum Tokens</label>
@@ -390,6 +640,7 @@ class MathCalculator:
                                 <select class="form-select mb-2" id="lang1">
                                     <option value="python">Python</option>
                                     <option value="javascript">JavaScript</option>
+                                    <option value="typescript">TypeScript</option>
                                 </select>
                                 <textarea class="form-control" id="code1" rows="10" placeholder="Enter your first code sample here..."></textarea>
                             </div>
@@ -400,6 +651,7 @@ class MathCalculator:
                                 <select class="form-select mb-2" id="lang2">
                                     <option value="python">Python</option>
                                     <option value="javascript">JavaScript</option>
+                                    <option value="typescript">TypeScript</option>
                                 </select>
                                 <textarea class="form-control" id="code2" rows="10" placeholder="Enter your second code sample here..."></textarea>
                             </div>
@@ -408,7 +660,8 @@ class MathCalculator:
                     <div class="row mt-3">
                         <div class="col-md-6">
                             <label class="form-label">Ambang Batas: <span id="manualThresholdValue">70%</span></label>
-                            <input type="range" class="form-range" id="manualThresholdRange" min="0" max="1" step="0.05" value="0.70" onchange="updateManualThreshold()">
+                            <input type="range" class="form-range" id="manualThresholdRange" min="0" max="1" step="0.05" value="0.70" onchange="updateManualThreshold()" disabled readonly>
+                            <small class="text-muted">Threshold telah ditetapkan dan tidak dapat diubah</small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Minimum Tokens</label>
@@ -425,16 +678,17 @@ class MathCalculator:
                 <!-- GitHub Repository Tab -->
                 <div class="tab-pane fade" id="github">
                     <h5><i class="fab fa-github"></i> Analyze GitHub Repository</h5>
-                    <p>Masukkan URL repository GitHub (public) untuk dianalisis. Sistem akan mengambil file Python dan melakukan perbandingan internal.</p>
+                    <p>Masukkan URL repository GitHub (public) untuk dianalisis. Sistem akan mengambil file Python/JavaScript/TypeScript dan melakukan perbandingan internal.</p>
                     <div class="mb-3">
                         <label class="form-label">GitHub Repository URL</label>
                         <input type="text" class="form-control" id="githubUrl" placeholder="https://github.com/owner/repo">
-                        <small class="text-muted">Hanya repository publik. Saat ini fokus pada file Python (.py).</small>
+                        <small class="text-muted">Hanya repository publik. Didukung: .py, .js, .jsx, .ts, .tsx.</small>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label class="form-label">Ambang Batas: <span id="githubThresholdValue">70%</span></label>
-                            <input type="range" class="form-range" id="githubThresholdRange" min="0" max="1" step="0.05" value="0.70" onchange="updateGithubThreshold()">
+                            <input type="range" class="form-range" id="githubThresholdRange" min="0" max="1" step="0.05" value="0.70" onchange="updateGithubThreshold()" disabled readonly>
+                            <small class="text-muted">Threshold telah ditetapkan dan tidak dapat diubah</small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Minimum Tokens</label>
@@ -453,6 +707,199 @@ class MathCalculator:
                         </button>
                     </div>
                     <div id="githubStatusArea"></div>
+
+                    <hr class="my-4">
+                    <h5><i class="fab fa-github"></i> Cross-Repository (Akun)</h5>
+                    <p>Bandingkan beberapa repository dalam satu akun/organisasi GitHub (A vs B antar repo).</p>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">GitHub Username / Organization</label>
+                            <input type="text" class="form-control" id="githubUsername" placeholder="octocat">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Maks Repo</label>
+                            <input type="number" class="form-control" id="maxRepos" value="5" min="2" max="20">
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="includeForks">
+                                <label class="form-check-label" for="includeForks">Sertakan Forks</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <form>
+                                <small class="text-muted">Opsional token (untuk rate limit/private):</small>
+                                <input type="password" class="form-control" id="ghToken" placeholder="GitHub Token (opsional)">
+                            </form>
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-dark" onclick="analyzeGithubAccount()">
+                                <i class="fas fa-project-diagram"></i> Mulai Analisis Cross-Repo
+                            </button>
+                        </div>
+                    </div>
+                    <div id="githubAccountStatusArea" class="mt-3"></div>
+
+                    <hr class="my-4">
+                    <h5><i class="fab fa-github"></i> Cross-Repository (Custom URLs)</h5>
+                    <p>Bandingkan beberapa repository dengan memasukkan URL secara manual (satu URL per baris).</p>
+                    <div class="mb-3">
+                        <label class="form-label">GitHub Repository URLs</label>
+                        <textarea class="form-control" id="githubRepoUrls" rows="5" placeholder="https://github.com/owner/repoA
+https://github.com/owner/repoB"></textarea>
+                        <small class="text-muted">Minimal 2 URL. Hanya repository publik.</small>
+                    </div>
+                    <div class="mb-3">
+                        <button class="btn btn-dark" onclick="analyzeGithubCrossUrls()">
+                            <i class="fas fa-project-diagram"></i> Mulai Analisis Cross-Repo (URLs)
+                        </button>
+                    </div>
+                    <div id="githubCrossStatusArea"></div>
+                </div>
+                
+                <!-- Cross-Project Analysis Tab -->
+                <div class="tab-pane fade" id="cross-project">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="text-center mb-4">
+                                <h4><i class="fas fa-layer-group text-primary"></i> Cross-Project Analysis</h4>
+                                <p class="text-muted">Upload folder dengan subfolder sebagai project terpisah untuk analisis cross-project</p>
+                            </div>
+                            
+                            <!-- Upload Section -->
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-cloud-upload-alt"></i> Upload Main Folder</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="upload-zone border border-2 rounded p-4 text-center" 
+                                         style="min-height: 160px; border-style: dashed !important; background: #f8f9fa; transition: all 0.3s ease;"
+                                         ondrop="handleFolderDrop(event)" ondragover="event.preventDefault()" ondragleave="resetDropZone(event)">
+                                        <i class="fas fa-cloud-upload-alt fa-4x text-muted mb-3"></i>
+                                        <h6 class="text-muted mb-3">Drag & Drop folder utama di sini</h6>
+                                        <p class="small text-muted mb-3">atau klik tombol di bawah</p>
+                                        
+                                        <input type="file" id="crossProjectFolderInput" webkitdirectory multiple style="display:none;" onchange="processCrossProjectFolder(event)">
+                                        
+                                        <div class="text-center mb-3">
+                                            <button type="button" class="btn btn-primary btn-lg" onclick="document.getElementById('crossProjectFolderInput').click()">
+                                                <i class="fas fa-folder-open me-2"></i>Pilih Folder Utama
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="small text-muted">
+                                            <strong>Struktur yang diharapkan:</strong><br>
+                                            main-folder/<br>
+                                            ├── project1/ (akan dianalisis sebagai Project 1)<br>
+                                            ├── project2/ (akan dianalisis sebagai Project 2)<br>
+                                            └── project3/ (akan dianalisis sebagai Project 3)
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-3">
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle"></i>
+                                            <strong>Supported:</strong> Python (.py), JavaScript (.js, .jsx), TypeScript (.ts, .tsx)
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Projects Preview -->
+                            <div id="projectsPreview" class="card shadow-sm mb-4" style="display: none;">
+                                <div class="card-header bg-success text-white">
+                                    <h6 class="mb-0"><i class="fas fa-eye"></i> Projects Detected</h6>
+                                </div>
+                                <div class="card-body" id="projectsPreviewContent">
+                                </div>
+                            </div>
+                            
+                            <!-- Analysis Settings -->
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-cogs"></i> Analysis Settings</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Similarity Threshold: <span class="badge bg-primary" id="crossProjectThresholdValue">70%</span></label>
+                                                <input type="range" class="form-range" id="crossProjectThresholdRange" min="0" max="1" step="0.05" value="0.70" onchange="updateCrossProjectThreshold()" disabled readonly>
+                                                <div class="d-flex justify-content-between small text-muted">
+                                                    <span>0%</span>
+                                                    <span>100%</span>
+                                                </div>
+                                                <small class="text-muted threshold-disabled-note">Threshold telah ditetapkan dan tidak dapat diubah</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Minimum Tokens</label>
+                                                <input type="number" class="form-control" id="crossProjectMinTokens" value="10" min="1">
+                                                <small class="text-muted">Minimum token count untuk analisis</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="text-center">
+                                        <button class="btn btn-secondary btn-lg px-5" id="startCrossProjectAnalysis" onclick="startCrossProjectAnalysis()" disabled>
+                                            <i class="fas fa-search me-2"></i>Start Cross-Project Analysis
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Progress Section -->
+                            <div id="crossProjectProgress" class="mt-4" style="display: none;">
+                            </div>
+                            
+                            <!-- Results Section -->
+                            <div id="crossProjectResults" class="mt-4" style="display: none;">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-success text-white">
+                                        <h6 class="mb-0"><i class="fas fa-chart-line"></i> Cross-Project Analysis Results</h6>
+                                    </div>
+                                    <div class="card-body" id="crossProjectResultsContent">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4">
+                            <!-- Help Section -->
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-info text-white">
+                                    <h6 class="mb-0"><i class="fas fa-question-circle"></i> Cara Penggunaan</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <h6 class="text-primary"><i class="fas fa-folder"></i> Upload Folder</h6>
+                                        <ul class="small mb-0 list-unstyled">
+                                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Pilih folder yang berisi subfolder projects</li>
+                                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Setiap subfolder akan dianggap sebagai project terpisah</li>
+                                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Sistem otomatis deteksi dan kelompokkan files</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <h6 class="text-success"><i class="fas fa-chart-line"></i> Analysis Output</h6>
+                                        <ul class="small mb-0 list-unstyled">
+                                            <li class="mb-1"><i class="fas fa-layer-group text-primary me-2"></i>Cross-project similarity matrix</li>
+                                            <li class="mb-1"><i class="fas fa-code text-primary me-2"></i>Per-project comparison</li>
+                                            <li class="mb-1"><i class="fas fa-chart-bar text-primary me-2"></i>Detailed similarity scores</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="alert alert-warning py-2">
+                                        <small>
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            <strong>Tips:</strong> Upload minimal 2 subfolder untuk perbandingan cross-project
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -592,7 +1039,7 @@ class MathCalculator:
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-12">
                         <div class="card">
                             <div class="card-header">
                                 <h5><i class="fas fa-chart-bar"></i> Distribusi Kesamaan</h5>
@@ -602,10 +1049,14 @@ class MathCalculator:
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                </div>
+                
+                <!-- Moved Results Section Below Distribution -->
+                <div class="row mt-3">
+                    <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h5><i class="fas fa-list"></i>Hasil Deteksi</h5>
+                                <h5><i class="fas fa-list"></i> Hasil Deteksi</h5>
                             </div>
                             <div class="card-body">
                                 <div id="detectionResults"></div>
@@ -709,6 +1160,25 @@ class MathCalculator:
             </div>
         </div>
     </div>
+
+        <!-- Pair Detail Modal -->
+        <div class="modal fade" id="pairDetailModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="pairDetailTitle">Detail Pair</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="pairDetailSummary" class="mb-3"></div>
+                        <div class="row g-3" id="pairDetailMatrixRow"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     <!-- Footer -->
     <footer class="container-fluid bg-dark text-white py-4 mt-5">
@@ -887,6 +1357,392 @@ class MathCalculator:
                 });
         }
 
+        // Analyze GitHub account cross-repo
+        function analyzeGithubAccount() {
+            const username = document.getElementById('githubUsername').value.trim();
+            if (!username) { alert('Masukkan username/organisasi GitHub.'); return; }
+            const threshold = document.getElementById('githubThresholdRange').value;
+            const includeForks = document.getElementById('includeForks').checked;
+            const maxReposEl = document.getElementById('maxRepos');
+            // Allow larger accounts; cap at 200 for safety
+            const maxRepos = Math.max(2, Math.min(200, parseInt(maxReposEl.value || '20', 10)));
+            const token = (document.getElementById('ghToken').value || '').trim();
+            const fd = new FormData();
+            fd.append('username', username);
+            fd.append('threshold', threshold);
+            fd.append('include_forks', includeForks ? 'true' : 'false');
+            fd.append('max_repos', String(maxRepos));
+            fd.append('skip_matrices', 'true');
+            if (token) fd.append('token', token);
+            const statusArea = document.getElementById('githubAccountStatusArea');
+            statusArea.innerHTML = `<div class="alert alert-info"><div class="d-flex align-items-center"><div class="spinner-border spinner-border-sm me-2"></div><div><strong>Memulai analisis cross-repo...</strong><div class='small'>Mengambil daftar repository dan mengunduh file...</div></div></div></div>`;
+            fetch('/analyze/github/account', { method: 'POST', body: fd })
+                .then(r => { if (!r.ok) throw new Error('Gagal memulai analisis cross-repo'); return r.json(); })
+                .then(resp => {
+                    if (resp.analysis_id) {
+                        statusArea.innerHTML = `<div class='alert alert-info'><strong>Analisis dimulai.</strong> ID: ${resp.analysis_id}<br><span class='small'>Polling status...</span></div>`;
+                        pollGithubAccountStatus(resp.analysis_id, Date.now());
+                    } else {
+                        statusArea.innerHTML = `<div class='alert alert-danger'>Respon tidak valid.</div>`;
+                    }
+                })
+                .catch(e => {
+                    statusArea.innerHTML = `<div class='alert alert-danger'>Error: ${e.message}</div>`;
+                });
+        }
+
+        function pollGithubAccountStatus(analysisId, startTs) {
+            const statusArea = document.getElementById('githubAccountStatusArea');
+            fetch(`/status/${analysisId}`)
+                .then(r => { if (!r.ok) throw new Error('Status tidak ditemukan'); return r.json(); })
+                .then(stat => {
+                    if (stat.status === 'processing') {
+                        const processed = stat.processed_repos || 0;
+                        const total = stat.total_repos || 0;
+                        let pct = 0;
+                        if (total > 0) pct = Math.min(100, Math.round((processed / total) * 100));
+                        statusArea.innerHTML = `
+                          <div class='alert alert-info'>
+                            <div class='d-flex align-items-center mb-1'>
+                              <div class='spinner-border spinner-border-sm me-2'></div>
+                              <div>
+                                <strong>Memproses repos...</strong>
+                                <div class='small'>${processed} / ${total || '?'} repo diunduh & dianalisis</div>
+                              </div>
+                            </div>
+                            <div class="progress" style="height:6px;">
+                              <div class="progress-bar" role="progressbar" style="width:${pct}%;" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                          </div>`;
+                        setTimeout(() => pollGithubAccountStatus(analysisId, startTs), 1500);
+                    } else if (stat.status === 'completed') {
+                        const res = stat.result || {};
+                        statusArea.innerHTML = `<div class='alert alert-success'><strong>Analisis selesai.</strong> Menampilkan hasil cross-repo.</div>`;
+                        showResultsCrossRepo(res);
+                    } else if (stat.status === 'error') {
+                        // Special handling for GitHub rate limit
+                        const err = stat.error || 'Terjadi kesalahan';
+                        let extra = '';
+                        const rl = stat.rate_limit;
+                        let resetInfo = '';
+                        if (rl && rl.reset) {
+                            const resetTs = parseInt(rl.reset, 10);
+                            const resetDate = new Date(resetTs * 1000);
+                            resetInfo = `Limit reset: ${resetDate.toLocaleString()}`;
+                        } else {
+                            // Try parse from message "reset at <epoch>"
+                            const m = err.match(/reset at (\d{9,})/);
+                            if (m) {
+                                const resetTs = parseInt(m[1], 10);
+                                const resetDate = new Date(resetTs * 1000);
+                                resetInfo = `Limit reset: ${resetDate.toLocaleString()}`;
+                            }
+                        }
+                        extra = `<div class='small mt-1'>${resetInfo}<br>Solusi: Masukkan GitHub Token pada form untuk meningkatkan batas (public repos cukup tanpa scope khusus).</div>`;
+                        statusArea.innerHTML = `<div class='alert alert-danger'><strong>Error:</strong> ${err}</div>${extra}`;
+                    } else {
+                        statusArea.innerHTML = `<div class='alert alert-warning'>Status: ${stat.status}</div>`;
+                    }
+                })
+                .catch(e => {
+                    statusArea.innerHTML = `<div class='alert alert-danger'>Polling gagal: ${e.message}</div>`;
+                });
+        }
+
+        function renderRepoPairsTable(pairs){
+            if (!Array.isArray(pairs) || pairs.length === 0) {
+                return `<div class='alert alert-warning'>Tidak ada pasangan repository untuk ditampilkan.</div>`;
+            }
+            let html = `<div class='d-flex justify-content-between align-items-center mb-2'>
+                <div class='small text-muted'>Klik "Detail" untuk melihat matriks Cosine dan TF-IDF seperti tampilan manual.</div>
+                </div>
+                <div class='table-responsive'><table class='table table-bordered table-striped align-middle'>
+                <thead class='table-dark'>
+                    <tr>
+                        <th>Repo A</th>
+                        <th>Repo B</th>
+                        <th>Maks Similarity</th>
+                        <th>Rata-rata (Best-Match)</th>
+                        <th>Plagiarized (Best-Match)</th>
+                            <th>Top File Pairs</th>
+                            <th>Detail</th>
+                    </tr>
+                </thead><tbody>`;
+            pairs.forEach(p => {
+                const maxSim = (p.max_similarity || 0).toFixed(2);
+                const meanBest = (p.best_match_mean_similarity ?? p.mean_similarity ?? 0).toFixed(2);
+                const plagBest = `${p.best_match_plagiarized_pairs ?? (p.plagiarized_pairs || 0)} / ${p.best_match_total_pairs ?? (p.total_pairs || 0)}`;
+                const any = (p.best_match_plagiarized_pairs ?? p.plagiarized_pairs) > 0 ? '<span class="badge bg-danger">Plagiat</span>' : '<span class="badge bg-success">Aman</span>';
+                let tops = '-';
+                if (Array.isArray(p.top_file_pairs) && p.top_file_pairs.length) {
+                    tops = '<ul class="mb-0 small">' + p.top_file_pairs.map(t => `<li>${escapeHtml(t.fileA)} ↔ ${escapeHtml(t.fileB)} <span class='badge bg-secondary'>${(t.similarity||0).toFixed(2)}</span></li>`).join('') + '</ul>';
+                }
+                const crossInfo = (p.total_pairs && p.mean_similarity !== undefined)
+                  ? `<div class='small text-muted'>All-vs-All: ${p.plagiarized_pairs||0}/${p.total_pairs} • mean=${(p.mean_similarity||0).toFixed(2)}</div>`
+                  : '';
+                    const canDetail = p.repoA_url && p.repoB_url;
+                    const detailBtn = canDetail
+                      ? `<button class='btn btn-sm btn-primary' onclick="openPairDetail('${encodeURIComponent(p.repoA_url)}','${encodeURIComponent(p.repoB_url)}','${escapeHtml(p.repoA)}','${escapeHtml(p.repoB)}')"><i class='fas fa-search'></i> Detail</button>`
+                      : `<span class='text-muted small'>-</span>`;
+                html += `<tr>
+                    <td>${escapeHtml(p.repoA)}</td>
+                    <td>${escapeHtml(p.repoB)}</td>
+                                        <td>${maxSim}</td>
+                                        <td>${meanBest}${crossInfo ? `<br>${crossInfo}` : ''}</td>
+                                        <td>${plagBest} ${any}</td>
+                                        <td>${tops}</td>
+                                        <td>${detailBtn}</td>
+                </tr>`;
+            });
+            html += `</tbody></table></div>`;
+            return html;
+        }
+
+        // Open pair detail modal and start analysis (global)
+        function openPairDetail(repoAEnc, repoBEnc, labelA, labelB){
+            const repoA = decodeURIComponent(repoAEnc);
+            const repoB = decodeURIComponent(repoBEnc);
+            const modalTitle = document.getElementById('pairDetailTitle');
+            const summary = document.getElementById('pairDetailSummary');
+            const matrixRow = document.getElementById('pairDetailMatrixRow');
+            modalTitle.textContent = `Detail: ${labelA} ↔ ${labelB}`;
+            summary.innerHTML = `<div class='alert alert-info'><div class='d-flex align-items-center'><div class='spinner-border spinner-border-sm me-2'></div><div>Menghitung matriks Cosine & TF-IDF...</div></div></div>`;
+            matrixRow.innerHTML = '';
+            const modal = new bootstrap.Modal(document.getElementById('pairDetailModal'));
+            modal.show();
+            startPairDetailAnalysis(repoA, repoB);
+        }
+
+        function startPairDetailAnalysis(repoA, repoB){
+            const threshold = document.getElementById('githubThresholdRange')?.value || document.getElementById('thresholdRange')?.value || '0.7';
+            const fd = new FormData();
+            fd.append('repo_a_url', repoA);
+            fd.append('repo_b_url', repoB);
+            fd.append('threshold', threshold);
+            fd.append('preset', 'strict');
+            fd.append('skip_matrices', 'false');
+            fetch('/analyze/github/pair_detail', { method: 'POST', body: fd })
+                .then(r => { if (!r.ok) throw new Error('Gagal memulai analisis detail'); return r.json(); })
+                .then(resp => {
+                    if (resp.analysis_id) {
+                        pollGithubPairDetailStatus(resp.analysis_id);
+                    } else {
+                        document.getElementById('pairDetailSummary').innerHTML = `<div class='alert alert-danger'>Respon tidak valid.</div>`;
+                    }
+                })
+                .catch(e => {
+                    document.getElementById('pairDetailSummary').innerHTML = `<div class='alert alert-danger'>Error: ${e.message}</div>`;
+                });
+        }
+
+        function pollGithubPairDetailStatus(analysisId){
+            fetch(`/status/${analysisId}`)
+                .then(r => { if (!r.ok) throw new Error('Status tidak ditemukan'); return r.json(); })
+                .then(stat => {
+                    if (stat.status === 'processing') {
+                        setTimeout(() => pollGithubPairDetailStatus(analysisId), 1200);
+                    } else if (stat.status === 'completed') {
+                        const payload = stat.result || {};
+                        renderPairDetailResults(payload);
+                    } else if (stat.status === 'error') {
+                        let extra = '';
+                        const rl = stat.rate_limit;
+                        if (rl && rl.reset) {
+                            const resetDate = new Date(parseInt(rl.reset,10) * 1000);
+                            extra = `<div class='small mt-1'>Limit reset: ${resetDate.toLocaleString()}</div>`;
+                        }
+                        document.getElementById('pairDetailSummary').innerHTML = `<div class='alert alert-danger'><strong>Error:</strong> ${stat.error || 'Terjadi kesalahan'}</div>${extra}`;
+                    } else {
+                        document.getElementById('pairDetailSummary').innerHTML = `<div class='alert alert-warning'>Status: ${stat.status}</div>`;
+                    }
+                })
+                .catch(e => {
+                    document.getElementById('pairDetailSummary').innerHTML = `<div class='alert alert-danger'>Polling gagal: ${e.message}</div>`;
+                });
+        }
+
+        function renderPairDetailResults(data){
+            const mapped = {
+                filesCount: data.filesCount ?? data.total_files ?? data.totalFiles ?? 0,
+                comparisons: data.comparisons ?? data.total_comparisons ?? data.totalComparisons ?? (data.comparisonsDetail ? data.comparisonsDetail.length : 0),
+                plagiarismCount: data.plagiarismCount ?? data.plagiarism_cases ?? data.plagiarismCases ?? 0,
+                processingTime: data.processingTime ?? data.duration ?? data.processing_time ?? '0',
+                comparisonsDetail: data.comparisonsDetail ?? data.all_comparisons ?? data.results ?? [],
+                similarityMatrix: data.similarityMatrix ?? data.similarity_matrix ?? undefined,
+                fileNames: data.fileNames ?? data.filenames ?? data.files ?? undefined,
+                tfidf: data.tfidf ?? undefined,
+                astTokens: data.astTokens ?? data.tokens ?? undefined
+            };
+            const threshold = parseFloat(document.getElementById('githubThresholdRange')?.value || '0.7');
+            const summaryEl = document.getElementById('pairDetailSummary');
+            let hasPlag = mapped.comparisonsDetail.some(p => (p.similarity ?? p.similarity_score ?? 0) >= threshold);
+            let summary = '';
+            if (hasPlag) {
+                summary = `<div class='alert alert-danger'><strong>Plagiarisme terdeteksi pada pasangan berkas.</strong></div>`;
+            } else {
+                summary = `<div class='alert alert-success'><strong>Tidak ada plagiarisme signifikan pada pasangan berkas.</strong></div>`;
+            }
+            summaryEl.innerHTML = summary;
+            const matrixRow = document.getElementById('pairDetailMatrixRow');
+            let matrixHTML = '';
+            if (mapped.similarityMatrix && mapped.fileNames) {
+                matrixHTML += `<div class='col-12'><div class='cg-matrix-container'><div class='d-flex justify-content-between align-items-center mb-2'><div class='cg-matrix-title'><i class="fas fa-table"></i> Cosine Similarity Matrix</div><div class='cg-toolbar'><button class='cg-btn-icon' onclick="toggleMatrixSection('pairSimBody')"><i class='fas fa-eye'></i>Toggle</button></div></div><div id='pairSimBody'>${renderSimilarityMatrix(mapped.fileNames, mapped.similarityMatrix)}<div class='cg-note'><i class='fas fa-info-circle'></i> Warna sel mengikuti kategori threshold.</div></div></div></div>`;
+            }
+            if (mapped.tfidf && mapped.tfidf.featureNames && mapped.tfidf.matrix) {
+                matrixHTML += `<div class='col-12'><div class='cg-matrix-container'><div class='d-flex justify-content-between align-items-center mb-2'><div class='cg-matrix-title'><i class="fas fa-layer-group"></i> TF-IDF Matrix (Top 30)</div><div class='cg-toolbar'><button class='cg-btn-icon' onclick="toggleMatrixSection('pairTfidfBody')"><i class='fas fa-eye'></i>Toggle</button></div></div><div id='pairTfidfBody'>${renderTfidfMatrix(mapped.tfidf.featureNames, mapped.tfidf.matrix, mapped.fileNames)}<div class='cg-note'><i class='fas fa-info-circle'></i> Menampilkan 30 token teratas untuk visualisasi.</div></div></div></div>`;
+            }
+            if (mapped.astTokens && Array.isArray(mapped.astTokens.files)) {
+                matrixHTML += `<div class='col-12'><div class='cg-matrix-container'><div class='d-flex justify-content-between align-items-center mb-2'><div class='cg-matrix-title'><i class="fas fa-code"></i> AST Tokens per File</div><div class='cg-toolbar'><button class='cg-btn-icon' onclick="toggleMatrixSection('pairAstBody')"><i class='fas fa-eye'></i>Toggle</button></div></div><div id='pairAstBody'>${renderAstTokens(mapped.astTokens.files)}</div></div></div>`;
+            }
+            matrixRow.innerHTML = matrixHTML || `<div class='col-12'><div class='alert alert-warning'>Tidak ada matriks untuk ditampilkan.</div></div>`;
+        }
+
+        // Analyze and fetch matrices for a selected repo pair
+        function analyzeGithubPairDetail(repoAEncoded, repoBEncoded){
+            const repoA = decodeURIComponent(repoAEncoded);
+            const repoB = decodeURIComponent(repoBEncoded);
+            const threshold = document.getElementById('githubThresholdRange')?.value || '0.7';
+            const fd = new FormData();
+            fd.append('repo_a_url', repoA);
+            fd.append('repo_b_url', repoB);
+            fd.append('threshold', threshold);
+            fd.append('preset', 'strict');
+            fd.append('skip_matrices', 'false');
+            const statusArea = document.getElementById('githubPairStatusArea') || (function(){
+                const d = document.createElement('div');
+                d.id = 'githubPairStatusArea';
+                const ghTab = document.getElementById('github');
+                ghTab && ghTab.appendChild(d);
+                return d;
+            })();
+            statusArea.innerHTML = `<div class='alert alert-info'><div class='d-flex align-items-center'><div class='spinner-border spinner-border-sm me-2'></div><div><strong>Mengambil detail pasangan repo...</strong><div class='small'>Menghitung matriks Cosine dan TF-IDF...</div></div></div></div>`;
+            fetch('/analyze/github/pair_detail', { method: 'POST', body: fd })
+              .then(r => { if (!r.ok) throw new Error('Gagal memulai detail pasangan repo'); return r.json(); })
+              .then(resp => {
+                  if (resp.analysis_id) {
+                      statusArea.innerHTML = `<div class='alert alert-info'><strong>Dimulai.</strong> ID: ${resp.analysis_id} — polling...</div>`;
+                      pollGithubPairDetail(resp.analysis_id);
+                  } else {
+                      statusArea.innerHTML = `<div class='alert alert-danger'>Respon tidak valid.</div>`;
+                  }
+              })
+              .catch(e => {
+                  statusArea.innerHTML = `<div class='alert alert-danger'>Error: ${e.message}</div>`;
+              });
+        }
+
+        function pollGithubPairDetail(analysisId){
+            const statusArea = document.getElementById('githubPairStatusArea');
+            fetch(`/status/${analysisId}`)
+              .then(r => { if (!r.ok) throw new Error('Status tidak ditemukan'); return r.json(); })
+              .then(stat => {
+                  if (stat.status === 'processing') {
+                      statusArea.innerHTML = `<div class='alert alert-info'><div class='d-flex align-items-center'><div class='spinner-border spinner-border-sm me-2'></div><div><strong>Memproses detail...</strong></div></div></div>`;
+                      setTimeout(() => pollGithubPairDetail(analysisId), 1200);
+                  } else if (stat.status === 'completed') {
+                      statusArea.innerHTML = `<div class='alert alert-success'>Detail siap. Menampilkan matriks.</div>`;
+                      let payload = stat.result || {};
+                      showResults(payload); // reuse manual/multi-file renderer with matrices & tokens
+                  } else if (stat.status === 'error') {
+                      const err = stat.error || 'Terjadi kesalahan';
+                      let extra = '';
+                      const rl = stat.rate_limit;
+                      if (rl && rl.reset) {
+                          const dt = new Date(parseInt(rl.reset, 10) * 1000);
+                          extra = `<div class='small mt-1'>Limit reset: ${dt.toLocaleString()}</div>`;
+                      }
+                      statusArea.innerHTML = `<div class='alert alert-danger'><strong>Error:</strong> ${err}</div>${extra}`;
+                  } else {
+                      statusArea.innerHTML = `<div class='alert alert-warning'>Status: ${stat.status}</div>`;
+                  }
+              })
+              .catch(e => {
+                  statusArea.innerHTML = `<div class='alert alert-danger'>Polling gagal: ${e.message}</div>`;
+              });
+        }
+
+        // Analyze cross-repo by custom URLs
+        function analyzeGithubCrossUrls() {
+            const urlsStr = document.getElementById('githubRepoUrls').value.trim();
+            if (!urlsStr) { alert('Masukkan minimal 2 URL.'); return; }
+            const threshold = document.getElementById('githubThresholdRange').value;
+            const fd = new FormData();
+            fd.append('repo_urls', urlsStr);
+            fd.append('threshold', threshold);
+            fd.append('skip_matrices', 'true');
+            const statusArea = document.getElementById('githubCrossStatusArea');
+            statusArea.innerHTML = `<div class='alert alert-info'><div class='d-flex align-items-center'><div class='spinner-border spinner-border-sm me-2'></div><div><strong>Memulai analisis cross-repo (URLs)...</strong></div></div></div>`;
+            fetch('/analyze/github/cross_urls', { method: 'POST', body: fd })
+                .then(r => { if (!r.ok) throw new Error('Gagal memulai analisis cross-repo (URLs)'); return r.json(); })
+                .then(resp => {
+                    if (resp.analysis_id) {
+                        statusArea.innerHTML = `<div class='alert alert-info'><strong>Analisis dimulai.</strong> ID: ${resp.analysis_id}<br><span class='small'>Polling status...</span></div>`;
+                        pollGithubCrossStatus(resp.analysis_id, Date.now());
+                    } else {
+                        statusArea.innerHTML = `<div class='alert alert-danger'>Respon tidak valid.</div>`;
+                    }
+                })
+                .catch(e => {
+                    statusArea.innerHTML = `<div class='alert alert-danger'>Error: ${e.message}</div>`;
+                });
+        }
+
+        function pollGithubCrossStatus(analysisId, startTs) {
+            const statusArea = document.getElementById('githubCrossStatusArea');
+            fetch(`/status/${analysisId}`)
+                .then(r => { if (!r.ok) throw new Error('Status tidak ditemukan'); return r.json(); })
+                .then(stat => {
+                    if (stat.status === 'processing') {
+                        const processed = stat.processed_repos || 0;
+                        const total = stat.total_repos || 0;
+                        let pct = 0;
+                        if (total > 0) pct = Math.min(100, Math.round((processed / total) * 100));
+                        statusArea.innerHTML = `
+                          <div class='alert alert-info'>
+                            <div class='d-flex align-items-center mb-1'>
+                              <div class='spinner-border spinner-border-sm me-2'></div>
+                              <div>
+                                <strong>Memproses repos...</strong>
+                                <div class='small'>${processed} / ${total || '?'} repo diunduh & dianalisis</div>
+                              </div>
+                            </div>
+                            <div class="progress" style="height:6px;">
+                              <div class="progress-bar" role="progressbar" style="width:${pct}%;" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                          </div>`;
+                        setTimeout(() => pollGithubCrossStatus(analysisId, startTs), 1500);
+                    } else if (stat.status === 'completed') {
+                        const res = stat.result || {};
+                        statusArea.innerHTML = `<div class='alert alert-success'><strong>Analisis selesai.</strong> Menampilkan hasil cross-repo (URLs).</div>`;
+                        showResultsCrossRepo(res);
+                    } else if (stat.status === 'error') {
+                        const err = stat.error || 'Terjadi kesalahan';
+                        let extra = '';
+                        const rl = stat.rate_limit;
+                        let resetInfo = '';
+                        if (rl && rl.reset) {
+                            const resetTs = parseInt(rl.reset, 10);
+                            const resetDate = new Date(resetTs * 1000);
+                            resetInfo = `Limit reset: ${resetDate.toLocaleString()}`;
+                        } else {
+                            const m = err.match(/reset at (\d{9,})/);
+                            if (m) {
+                                const resetTs = parseInt(m[1], 10);
+                                const resetDate = new Date(resetTs * 1000);
+                                resetInfo = `Limit reset: ${resetDate.toLocaleString()}`;
+                            }
+                        }
+                        extra = `<div class='small mt-1'>${resetInfo}<br>Solusi: Masukkan GitHub Token pada form untuk meningkatkan batas.</div>`;
+                        statusArea.innerHTML = `<div class='alert alert-danger'><strong>Error:</strong> ${err}</div>${extra}`;
+                    } else {
+                        statusArea.innerHTML = `<div class='alert alert-warning'>Status: ${stat.status}</div>`;
+                    }
+                })
+                .catch(e => {
+                    statusArea.innerHTML = `<div class='alert alert-danger'>Polling gagal: ${e.message}</div>`;
+                });
+        }
+
         function pollGithubStatus(analysisId, startTs) {
             const statusArea = document.getElementById('githubStatusArea');
             fetch(`/status/${analysisId}`)
@@ -984,6 +1840,56 @@ class MathCalculator:
         // Global Chart.js instance
         let similarityChartInstance = null;
 
+        // Toast notification function
+        function showToast(message, type = 'info') {
+            // Create toast container if it doesn't exist
+            let toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toastContainer';
+                toastContainer.className = 'position-fixed top-0 end-0 p-3';
+                toastContainer.style.zIndex = '1055';
+                document.body.appendChild(toastContainer);
+            }
+            
+            // Create toast element
+            const toastId = 'toast_' + Date.now();
+            const toastClass = type === 'success' ? 'text-bg-success' : 
+                              type === 'error' ? 'text-bg-danger' : 
+                              type === 'warning' ? 'text-bg-warning' : 'text-bg-info';
+            
+            const toastHtml = `
+                <div id="${toastId}" class="toast ${toastClass}" role="alert">
+                    <div class="toast-header">
+                        <strong class="me-auto">
+                            <i class="fas ${type === 'success' ? 'fa-check-circle' : 
+                                          type === 'error' ? 'fa-exclamation-circle' : 
+                                          type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'}"></i>
+                            ${type === 'success' ? 'Success' : 
+                              type === 'error' ? 'Error' : 
+                              type === 'warning' ? 'Warning' : 'Info'}
+                        </strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                </div>
+            `;
+            
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+            
+            // Show toast
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
+            
+            // Remove toast element after it's hidden
+            toastElement.addEventListener('hidden.bs.toast', () => {
+                toastElement.remove();
+            });
+        }
+
         // Show results
         function showResults(data) {
                 // Ambil threshold dari UI sesuai tab aktif
@@ -1010,7 +1916,8 @@ class MathCalculator:
                     manualSimilarity: data.manualSimilarity,
                     similarityMatrix: data.similarityMatrix ?? data.similarity_matrix ?? undefined,
                     fileNames: data.fileNames ?? data.filenames ?? data.files ?? undefined,
-                    tfidf: data.tfidf ?? undefined
+                    tfidf: data.tfidf ?? undefined,
+                    astTokens: data.astTokens ?? data.tokens ?? undefined
                 };
                 data = mapped;
             // Sembunyikan hasil sampel
@@ -1033,7 +1940,6 @@ class MathCalculator:
                 <th>Berkas 2</th>
                 <th>Skor Kemiripan</th>
                 <th>Status</th>
-                <th>Bagian Plagiat</th>
             </tr>
         </thead>
         <tbody>`;
@@ -1054,21 +1960,16 @@ class MathCalculator:
                 } else {
                     statusBadge = '<span class="badge bg-success">Aman</span>';
                 }
-                let frag = '-';
-                if (pair.plagiarizedFragment) {
-                    frag = `<pre style='text-align:left;max-width:350px;overflow-x:auto;background:#f8d7da;padding:4px;border-radius:4px;'>${pair.plagiarizedFragment}</pre>`;
-                }
                 tableHTML += `<tr>
                     <td>${pair.file1}</td>
                     <td>${pair.file2}</td>
                     <td>${skor}</td>
                     <td>${statusBadge}</td>
-                    <td>${frag}</td>
                 </tr>`;
             });
             window._lastHasModerate = hasModerate;
         } else {
-            tableHTML += `<tr><td colspan="5">Tidak ada data perbandingan.</td></tr>`;
+            tableHTML += `<tr><td colspan="4">Tidak ada data perbandingan.</td></tr>`;
         }
         tableHTML += '</tbody></table></div>';
         // Ringkasan status
@@ -1111,6 +2012,49 @@ class MathCalculator:
             </div>
         </div>
     <div id='tfidfMatrixBody'>${renderTfidfMatrix(data.tfidf.featureNames, data.tfidf.matrix, data.fileNames)}<div class='cg-note'><i class='fas fa-info-circle'></i> Menampilkan 30 token teratas untuk visualisasi; ekspor CSV memuat seluruh vocabulary.</div></div>
+    </div>
+</div>`;
+                    }
+                    if (data.astTokens && Array.isArray(data.astTokens.files)) {
+                        matrixHTML += `<div class='col-12'>
+    <div class='cg-matrix-container'>
+        <div class='d-flex justify-content-between align-items-center mb-2'>
+            <div class='cg-matrix-title'><i class="fas fa-code"></i> AST Tokens per File</div>
+            <div class='cg-toolbar'>
+                <button class='cg-btn-icon' onclick="toggleMatrixSection('astTokensBody')"><i class='fas fa-eye'></i>Toggle</button>
+            </div>
+        </div>
+        <div id='astTokensBody'>${renderAstTokens(data.astTokens.files)}</div>
+    </div>
+</div>`;
+                    }
+                    
+                    // Tambahan visualisasi TF-IDF Vector Analysis
+                    if (data.tfidf && data.tfidf.featureNames && data.tfidf.matrix) {
+                        matrixHTML += `<div class='col-12'>
+    <div class='cg-matrix-container'>
+        <div class='d-flex justify-content-between align-items-center mb-2'>
+            <div class='cg-matrix-title'><i class="fas fa-chart-line"></i> TF-IDF Vector Analysis</div>
+            <div class='cg-toolbar'>
+                <button class='cg-btn-icon' onclick="toggleMatrixSection('tfidfVectorBody')"><i class='fas fa-eye'></i>Toggle</button>
+            </div>
+        </div>
+        <div id='tfidfVectorBody'>${renderTfidfVectorAnalysis(data.tfidf, data.fileNames)}</div>
+    </div>
+</div>`;
+                    }
+                    
+                    // Tambahan visualisasi Cosine Similarity Analysis
+                    if (data.similarityMatrix && data.fileNames) {
+                        matrixHTML += `<div class='col-12'>
+    <div class='cg-matrix-container'>
+        <div class='d-flex justify-content-between align-items-center mb-2'>
+            <div class='cg-matrix-title'><i class="fas fa-calculator"></i> Cosine Similarity Analysis</div>
+            <div class='cg-toolbar'>
+                <button class='cg-btn-icon' onclick="toggleMatrixSection('cosineAnalysisBody')"><i class='fas fa-eye'></i>Toggle</button>
+            </div>
+        </div>
+        <div id='cosineAnalysisBody'>${renderCosineSimilarityAnalysis(data.similarityMatrix, data.fileNames)}</div>
     </div>
 </div>`;
                     }
@@ -1174,6 +2118,66 @@ class MathCalculator:
     // Scroll ke hasil
     document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
 }
+
+        // Show cross-repo account/URLs results in main Results section
+        function showResultsCrossRepo(res){
+            // Determine threshold
+            let threshold = parseFloat(res.threshold_used ?? document.getElementById('githubThresholdRange')?.value ?? '0.7');
+            // Prepare metrics
+            const pairs = Array.isArray(res.repoPairs) ? res.repoPairs : [];
+            const reposAnalyzed = res.repositoriesAnalyzed || (res.repoNames ? res.repoNames.length : 0);
+            const comparisonsCount = pairs.length;
+            const plagiarismPairs = pairs.filter(p => p.any_plagiarism || (p.max_similarity ?? 0) >= threshold).length;
+            // Show container
+            document.getElementById('sampleResults').classList.add('d-none');
+            const container = document.getElementById('resultsContainer');
+            container.classList.remove('d-none');
+            // Update summary metrics (reuse tiles)
+            document.getElementById('filesCount').textContent = reposAnalyzed; // here: number of repositories
+            document.getElementById('comparisons').textContent = comparisonsCount; // repo-pair comparisons
+            document.getElementById('plagiarismCount').textContent = plagiarismPairs; // pairs flagged
+            // Leave processingTime untouched for now
+            // Build summary alert
+            const hasPlagiarism = plagiarismPairs > 0;
+            const anyModerate = pairs.some(p => (p.max_similarity ?? 0) >= 0.5 && (p.max_similarity ?? 0) < threshold);
+            let summaryHTML = '';
+            if (hasPlagiarism) {
+                summaryHTML = `<div class="alert alert-danger"><h6><i class="fas fa-exclamation-triangle"></i> Plagiarisme Antar-Repository Terdeteksi!</h6><p>Beberapa pasangan repository memiliki kemiripan di atas ambang batas (≥${(threshold*100).toFixed(0)}%).</p></div>`;
+            } else if (anyModerate) {
+                summaryHTML = `<div class="alert alert-warning"><h6><i class="fas fa-eye"></i> Kemiripan Menengah Antar-Repository</h6><p>Ada pasangan repository dengan kemiripan 50%-${(threshold*100-1).toFixed(0)}%.</p></div>`;
+            } else {
+                summaryHTML = `<div class="alert alert-success"><h6><i class="fas fa-check-circle"></i> Tidak Ada Plagiarisme Antar-Repository</h6><p>Tidak ditemukan kemiripan signifikan (≥50%).</p></div>`;
+            }
+            // Render pairs table
+            const resultsDiv = document.getElementById('detectionResults');
+            const table = renderRepoPairsTable(pairs);
+            resultsDiv.innerHTML = summaryHTML + table;
+            // Clear matrices section for cross-repo (no file-level matrices)
+            const matrixRow = document.getElementById('matrixRow');
+            if (matrixRow) matrixRow.innerHTML = '';
+            // Update distribution chart using max similarity per repo pair
+            const scores = pairs.map(p => p.max_similarity ?? 0);
+            const bins = [0, 0.5, threshold, 1.01];
+            const binLabels = [
+                `Aman (<50%)`,
+                `Mirip (50%-${(threshold*100-1).toFixed(0)}%)`,
+                `Plagiat (≥${(threshold*100).toFixed(0)}%)`
+            ];
+            const binColors = ['#28a745', '#ffc107', '#dc3545'];
+            const binCounts = [0, 0, 0];
+            scores.forEach(s => { if (s < 0.5) binCounts[0]++; else if (s < threshold) binCounts[1]++; else binCounts[2]++; });
+            const ctx = document.getElementById('similarityChart').getContext('2d');
+            if (window.similarityChartInstance) { window.similarityChartInstance.destroy(); }
+            window.similarityChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: binLabels, datasets: [{ label: 'Distribusi Kemiripan (Repo Pair)', data: binCounts, backgroundColor: binColors }] },
+                options: {
+                    plugins: { legend: { display: false }, title: { display: true, text: `Distribusi Kemiripan Antar-Repository (Threshold: ${(threshold*100).toFixed(0)}%)` } },
+                    scales: { y: { beginAtZero: true, title: { display: true, text: 'Jumlah' } }, x: { title: { display: true, text: 'Kategori' } } }
+                }
+            });
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
 
         // Initialize
     document.addEventListener('DOMContentLoaded', function() {
@@ -1282,6 +2286,234 @@ class MathCalculator:
             return html;
         }
 
+        function renderAstTokens(files){
+            if (!Array.isArray(files) || files.length === 0) return '<div class="text-muted">No AST tokens available.</div>';
+            let html = '<div class="cg-matrix-wrapper">';
+            html += '<table class="table table-sm table-striped"><thead><tr><th>File</th><th>Tokens</th></tr></thead><tbody>';
+            files.forEach(item => {
+                const name = escapeHtml(item.file || '');
+                const toks = Array.isArray(item.tokens) ? item.tokens : [];
+                const preview = toks.slice(0, 300).join(' ');
+                const more = toks.length > 300 ? ` <span class="badge bg-secondary">+${toks.length-300} more</span>` : '';
+                html += `<tr><td class='text-truncate' style='max-width:240px;'>${name}</td><td><pre style='white-space:pre-wrap;word-break:break-word;'>${escapeHtml(preview)}</pre>${more}</td></tr>`;
+            });
+            html += '</tbody></table></div>';
+            return html;
+        }
+
+        function renderTfidfVectorAnalysis(tfidfData, fileNames) {
+            if (!tfidfData || !tfidfData.featureNames || !tfidfData.matrix) {
+                return '<div class="text-muted">No TF-IDF vector data available.</div>';
+            }
+            
+            let html = '<div class="row">';
+            
+            // Vector Statistics
+            html += '<div class="col-md-6"><div class="card h-100"><div class="card-header bg-primary text-white">';
+            html += '<h6 class="mb-0"><i class="fas fa-chart-bar"></i> Vector Statistics</h6></div>';
+            html += '<div class="card-body"><table class="table table-sm">';
+            html += '<tr><th>Vocabulary Size</th><td>' + tfidfData.featureNames.length + ' terms</td></tr>';
+            html += '<tr><th>Documents</th><td>' + tfidfData.matrix.length + ' files</td></tr>';
+            
+            // Calculate sparsity
+            let totalCells = tfidfData.matrix.length * tfidfData.featureNames.length;
+            let nonZeroCells = 0;
+            for (let i = 0; i < tfidfData.matrix.length; i++) {
+                for (let j = 0; j < tfidfData.featureNames.length; j++) {
+                    if (tfidfData.matrix[i][j] > 0) nonZeroCells++;
+                }
+            }
+            let sparsity = ((totalCells - nonZeroCells) / totalCells * 100).toFixed(1);
+            html += '<tr><th>Sparsity</th><td>' + sparsity + '% (sparse)</td></tr>';
+            html += '</table></div></div></div>';
+            
+            // Top Terms by TF-IDF Score
+            html += '<div class="col-md-6"><div class="card h-100"><div class="card-header bg-info text-white">';
+            html += '<h6 class="mb-0"><i class="fas fa-list-ol"></i> Top Terms by TF-IDF Score</h6></div>';
+            html += '<div class="card-body"><div style="max-height: 200px; overflow-y: auto;">';
+            
+            // Calculate term scores across all documents
+            const termScores = tfidfData.featureNames.map((term, idx) => {
+                let maxScore = 0;
+                let sumScore = 0;
+                for (let i = 0; i < tfidfData.matrix.length; i++) {
+                    const score = tfidfData.matrix[i][idx] || 0;
+                    maxScore = Math.max(maxScore, score);
+                    sumScore += score;
+                }
+                return { term, maxScore, sumScore, avgScore: sumScore / tfidfData.matrix.length };
+            });
+            
+            // Sort by maximum score
+            termScores.sort((a, b) => b.maxScore - a.maxScore);
+            
+            html += '<table class="table table-sm table-striped"><thead><tr><th>Term</th><th>Max TF-IDF</th></tr></thead><tbody>';
+            termScores.slice(0, 15).forEach(item => {
+                const intensity = Math.min(100, item.maxScore * 100);
+                html += `<tr><td class="text-truncate" style="max-width: 120px;">${escapeHtml(item.term)}</td>`;
+                html += `<td><div class="d-flex align-items-center"><span class="me-2">${item.maxScore.toFixed(3)}</span>`;
+                html += `<div class="flex-grow-1 bg-light rounded" style="height: 8px;"><div class="bg-info rounded h-100" style="width: ${intensity}%;"></div></div></div></td></tr>`;
+            });
+            html += '</tbody></table></div></div></div></div>';
+            
+            // Vector Magnitude Analysis
+            html += '<div class="col-12 mt-3"><div class="card"><div class="card-header bg-success text-white">';
+            html += '<h6 class="mb-0"><i class="fas fa-ruler"></i> Document Vector Magnitudes</h6></div>';
+            html += '<div class="card-body">';
+            
+            // Calculate vector magnitudes
+            const vectorMagnitudes = tfidfData.matrix.map((vector, idx) => {
+                let magnitude = 0;
+                for (let i = 0; i < vector.length; i++) {
+                    magnitude += vector[i] * vector[i];
+                }
+                magnitude = Math.sqrt(magnitude);
+                return { 
+                    file: fileNames && fileNames[idx] ? fileNames[idx] : `Document ${idx + 1}`, 
+                    magnitude 
+                };
+            });
+            
+            const maxMagnitude = Math.max(...vectorMagnitudes.map(v => v.magnitude));
+            
+            html += '<div class="row">';
+            vectorMagnitudes.forEach(item => {
+                const percentage = maxMagnitude > 0 ? (item.magnitude / maxMagnitude * 100) : 0;
+                html += '<div class="col-md-6 mb-2">';
+                html += `<div class="d-flex align-items-center">`;
+                html += `<span class="me-2 text-truncate" style="min-width: 100px; max-width: 150px;">${escapeHtml(item.file)}</span>`;
+                html += `<div class="flex-grow-1 bg-light rounded me-2" style="height: 12px;">`;
+                html += `<div class="bg-success rounded h-100" style="width: ${percentage}%;"></div></div>`;
+                html += `<small class="text-muted">${item.magnitude.toFixed(3)}</small>`;
+                html += '</div></div>';
+            });
+            html += '</div></div></div></div>';
+            
+            html += '</div>'; // close row
+            return html;
+        }
+
+        function renderCosineSimilarityAnalysis(similarityMatrix, fileNames) {
+            if (!similarityMatrix || !fileNames) {
+                return '<div class="text-muted">No cosine similarity data available.</div>';
+            }
+            
+            let html = '<div class="row">';
+            
+            // Similarity Distribution
+            html += '<div class="col-md-6"><div class="card h-100"><div class="card-header bg-warning text-dark">';
+            html += '<h6 class="mb-0"><i class="fas fa-chart-pie"></i> Similarity Distribution</h6></div>';
+            html += '<div class="card-body">';
+            
+            // Extract all similarity values (excluding diagonal)
+            let similarities = [];
+            for (let i = 0; i < similarityMatrix.length; i++) {
+                for (let j = i + 1; j < similarityMatrix[i].length; j++) {
+                    similarities.push(similarityMatrix[i][j]);
+                }
+            }
+            
+            // Create distribution
+            const ranges = [
+                { label: 'Very Low (0.0-0.2)', min: 0.0, max: 0.2, color: '#28a745' },
+                { label: 'Low (0.2-0.4)', min: 0.2, max: 0.4, color: '#20c997' },
+                { label: 'Medium (0.4-0.6)', min: 0.4, max: 0.6, color: '#ffc107' },
+                { label: 'High (0.6-0.8)', min: 0.6, max: 0.8, color: '#fd7e14' },
+                { label: 'Very High (0.8-1.0)', min: 0.8, max: 1.0, color: '#dc3545' }
+            ];
+            
+            ranges.forEach(range => {
+                const count = similarities.filter(s => s >= range.min && s < range.max).length;
+                const percentage = similarities.length > 0 ? (count / similarities.length * 100) : 0;
+                html += `<div class="d-flex align-items-center mb-2">`;
+                html += `<div style="width: 15px; height: 15px; background-color: ${range.color}; margin-right: 8px; border-radius: 2px;"></div>`;
+                html += `<span class="me-2" style="min-width: 140px;">${range.label}</span>`;
+                html += `<div class="flex-grow-1 bg-light rounded me-2" style="height: 8px;">`;
+                html += `<div class="rounded h-100" style="width: ${percentage}%; background-color: ${range.color};"></div></div>`;
+                html += `<small class="text-muted">${count}</small>`;
+                html += '</div>';
+            });
+            html += '</div></div></div>';
+            
+            // Statistics
+            html += '<div class="col-md-6"><div class="card h-100"><div class="card-header bg-info text-white">';
+            html += '<h6 class="mb-0"><i class="fas fa-calculator"></i> Cosine Similarity Formula</h6></div>';
+            html += '<div class="card-body">';
+            html += '<div class="text-center mb-3"><div class="border rounded p-3 bg-light">';
+            html += '<strong>cos(θ) = (A · B) / (||A|| × ||B||)</strong>';
+            html += '</div></div>';
+            html += '<table class="table table-sm">';
+            
+            if (similarities.length > 0) {
+                const avgSim = similarities.reduce((a, b) => a + b, 0) / similarities.length;
+                const maxSim = Math.max(...similarities);
+                const minSim = Math.min(...similarities);
+                html += `<tr><th>Average</th><td>${avgSim.toFixed(4)}</td></tr>`;
+                html += `<tr><th>Maximum</th><td>${maxSim.toFixed(4)}</td></tr>`;
+                html += `<tr><th>Minimum</th><td>${minSim.toFixed(4)}</td></tr>`;
+            }
+            
+            html += `<tr><th>Comparisons</th><td>${similarities.length}</td></tr>`;
+            html += `<tr><th>Files</th><td>${fileNames.length}</td></tr>`;
+            html += '</table>';
+            
+            html += '<div class="mt-3"><small class="text-muted">';
+            html += '<strong>Range:</strong> 0.0 (completely different) to 1.0 (identical)<br>';
+            html += '<strong>Threshold:</strong> ≥0.7 typically indicates potential plagiarism';
+            html += '</small></div>';
+            html += '</div></div></div>';
+            
+            // Most Similar Pairs
+            html += '<div class="col-12 mt-3"><div class="card"><div class="card-header bg-danger text-white">';
+            html += '<h6 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Most Similar File Pairs</h6></div>';
+            html += '<div class="card-body">';
+            
+            // Create pairs with similarity scores
+            let pairs = [];
+            for (let i = 0; i < similarityMatrix.length; i++) {
+                for (let j = i + 1; j < similarityMatrix[i].length; j++) {
+                    pairs.push({
+                        file1: fileNames[i],
+                        file2: fileNames[j],
+                        similarity: similarityMatrix[i][j]
+                    });
+                }
+            }
+            
+            // Sort by similarity descending
+            pairs.sort((a, b) => b.similarity - a.similarity);
+            
+            if (pairs.length > 0) {
+                html += '<table class="table table-sm table-striped"><thead><tr><th>File 1</th><th>File 2</th><th>Similarity</th><th>Status</th></tr></thead><tbody>';
+                pairs.slice(0, 10).forEach(pair => {
+                    const simPercent = (pair.similarity * 100).toFixed(1);
+                    let badgeClass = 'bg-success';
+                    let status = 'Safe';
+                    if (pair.similarity >= 0.7) {
+                        badgeClass = 'bg-danger';
+                        status = 'Potential Plagiarism';
+                    } else if (pair.similarity >= 0.5) {
+                        badgeClass = 'bg-warning text-dark';
+                        status = 'Similar';
+                    }
+                    
+                    html += `<tr>`;
+                    html += `<td class="text-truncate" style="max-width: 200px;">${escapeHtml(pair.file1)}</td>`;
+                    html += `<td class="text-truncate" style="max-width: 200px;">${escapeHtml(pair.file2)}</td>`;
+                    html += `<td><strong>${simPercent}%</strong></td>`;
+                    html += `<td><span class="badge ${badgeClass}">${status}</span></td>`;
+                    html += '</tr>';
+                });
+                html += '</tbody></table>';
+            } else {
+                html += '<div class="text-muted">No file pairs to compare.</div>';
+            }
+            
+            html += '</div></div></div>';
+            html += '</div>'; // close row
+            return html;
+        }
+
         // Continuous gradient helpers
         function similarityGradientStyle(v, isDiag){
             if(isDiag) return 'background:#198754;color:#fff;font-weight:600;'; // emphasize self-similarity
@@ -1361,6 +2593,1468 @@ class MathCalculator:
             const blob = new Blob([content], {type:'text/csv;charset=utf-8;'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+        }
+        // Cross-Project Analysis Functions
+        let crossProjectData = [];
+        
+        function updateCrossProjectThreshold() {
+            const slider = document.getElementById('crossProjectThresholdRange');
+            const display = document.getElementById('crossProjectThresholdValue');
+            display.textContent = Math.round(slider.value * 100) + '%';
+        }
+        
+        function handleFolderDrop(event) {
+            event.preventDefault();
+            const uploadZone = event.currentTarget;
+            uploadZone.style.backgroundColor = '#e6f3ff';
+            uploadZone.style.borderColor = '#0066cc';
+            
+            // Get files from drop
+            const items = event.dataTransfer.items;
+            let files = [];
+            
+            // Extract files
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                if (item.kind === 'file') {
+                    const file = item.getAsFile();
+                    if (file.webkitRelativePath) {
+                        files.push(file);
+                    }
+                }
+            }
+            
+            if (files.length > 0) {
+                processFolderFiles(files);
+            } else {
+                showToast('Error: Please drop a folder, not individual files', 'error');
+            }
+            
+            setTimeout(() => resetDropZone(event), 500);
+        }
+        
+        function resetDropZone(event) {
+            const uploadZone = event.currentTarget;
+            uploadZone.style.backgroundColor = '#f8f9fa';
+            uploadZone.style.borderColor = '#dee2e6';
+        }
+        
+        function processCrossProjectFolder(event) {
+            const files = Array.from(event.target.files);
+            
+            if (files.length === 0) {
+                showToast('No folder selected', 'error');
+                return;
+            }
+            
+            processFolderFiles(files);
+        }
+        
+        function processFolderFiles(files) {
+            console.log('Processing folder files:', files.length);
+            
+            // Group files by project (first level subfolder)
+            const projects = {};
+            const supportedExtensions = ['.py', '.js', '.jsx', '.ts', '.tsx'];
+            
+            files.forEach(file => {
+                const path = file.webkitRelativePath;
+                const pathParts = path.split('/');
+                
+                // Skip if less than 2 parts (no subfolder)
+                if (pathParts.length < 2) return;
+                
+                // Get project name (first subfolder)
+                const projectName = pathParts[1];
+                
+                // Check if file has supported extension
+                const hasValidExt = supportedExtensions.some(ext => 
+                    file.name.toLowerCase().endsWith(ext)
+                );
+                
+                if (hasValidExt && file.size > 0) {
+                    if (!projects[projectName]) {
+                        projects[projectName] = {
+                            name: projectName,
+                            files: [],
+                            fileCount: 0
+                        };
+                    }
+                    projects[projectName].files.push(file);
+                    projects[projectName].fileCount++;
+                }
+            });
+            
+            const projectNames = Object.keys(projects);
+            
+            if (projectNames.length < 2) {
+                showToast('Error: Minimum 2 projects (subfolders) required for cross-project analysis', 'error');
+                return;
+            }
+            
+            // Store project data
+            crossProjectData = projects;
+            
+            // Display preview
+            displayProjectsPreview(projects);
+            
+            // Enable analysis button
+            document.getElementById('startCrossProjectAnalysis').disabled = false;
+            
+            showToast(`Successfully detected ${projectNames.length} projects`, 'success');
+        }
+        
+        function displayProjectsPreview(projects) {
+            const previewDiv = document.getElementById('projectsPreview');
+            const contentDiv = document.getElementById('projectsPreviewContent');
+            
+            let html = '<div class="row">';
+            
+            Object.values(projects).forEach((project, index) => {
+                const colorClass = ['primary', 'success', 'info', 'warning', 'secondary', 'dark'][index % 6];
+                
+                html += `
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="border rounded p-3 h-100">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-cube text-${colorClass} me-2"></i>
+                                <h6 class="mb-0 fw-bold">${project.name}</h6>
+                            </div>
+                            <div class="text-muted small">
+                                <i class="fas fa-file-code me-1"></i>${project.fileCount} files
+                            </div>
+                            <div class="mt-2">
+                                <span class="badge bg-${colorClass}">Project ${index + 1}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            contentDiv.innerHTML = html;
+            previewDiv.style.display = 'block';
+        }
+        
+        async function startCrossProjectAnalysis() {
+            if (!crossProjectData || Object.keys(crossProjectData).length < 2) {
+                showToast('Please upload folder with projects first', 'error');
+                return;
+            }
+            
+            const button = document.getElementById('startCrossProjectAnalysis');
+            const originalText = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Analyzing...';
+            
+            // Show progress
+            const progressDiv = document.getElementById('crossProjectProgress');
+            progressDiv.style.display = 'block';
+            progressDiv.innerHTML = `
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0"><i class="fas fa-cogs fa-spin"></i> Analysis in Progress</h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="progressContent">
+                            <div class="text-center">
+                                <div class="spinner-border text-primary" role="status"></div>
+                                <p class="mt-2 mb-0">Preparing projects for cross-project analysis...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            try {
+                // Prepare files for analysis
+                const projectList = Object.values(crossProjectData);
+                const totalProjects = projectList.length;
+                const threshold = document.getElementById('crossProjectThresholdRange').value;
+                const minTokens = document.getElementById('crossProjectMinTokens').value;
+                
+                updateProgress(`Analyzing ${totalProjects} projects...`);
+                
+                const formData = new FormData();
+                
+                // Add project files to formData
+                projectList.forEach((project, projectIndex) => {
+                    project.files.forEach((file, fileIndex) => {
+                        // Create a new File with the correct webkitRelativePath
+                        const fileWithPath = new File([file], file.webkitRelativePath || file.name, {
+                            type: file.type,
+                            lastModified: file.lastModified
+                        });
+                        formData.append('files', fileWithPath);
+                    });
+                });
+                
+                // Add analysis parameters
+                formData.append('threshold', threshold);
+                formData.append('min_tokens', minTokens);
+                formData.append('analysis_type', 'cross_project');
+                formData.append('project_count', totalProjects);
+                
+                // Add project mapping
+                let projectMapping = {};
+                let globalFileIndex = 0;
+                projectList.forEach((project, projectIndex) => {
+                    project.files.forEach((file, fileIndex) => {
+                        projectMapping[globalFileIndex] = {
+                            projectName: project.name,
+                            projectIndex: projectIndex,
+                            fileName: file.name,
+                            filePath: file.webkitRelativePath || file.name
+                        };
+                        globalFileIndex++;
+                    });
+                });
+                formData.append('project_mapping', JSON.stringify(projectMapping));
+                
+                updateProgress(`Sending ${globalFileIndex} files for analysis...`);
+                
+                // Call analysis API
+                const response = await fetch('/analyze/cross_project', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Analysis failed: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.analysis_id) {
+                    updateProgress(`Analysis started. ID: ${result.analysis_id} - polling for results...`);
+                    
+                    // Poll for results
+                    await pollCrossProjectResults(result.analysis_id);
+                } else {
+                    throw new Error('Invalid response: no analysis_id');
+                }
+                
+            } catch (error) {
+                console.error('Cross-project analysis error:', error);
+                showToast(`Analysis error: ${error.message}`, 'error');
+                progressDiv.style.display = 'none';
+            } finally {
+                button.disabled = false;
+                button.innerHTML = originalText;
+            }
+        }
+        
+        async function pollCrossProjectResults(analysisId) {
+            const maxAttempts = 60; // 5 minutes with 5-second intervals
+            let attempts = 0;
+            
+            while (attempts < maxAttempts) {
+                try {
+                    const response = await fetch(`/status/${analysisId}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`Status check failed: ${response.status}`);
+                    }
+                    
+                    const status = await response.json();
+                    
+                    if (status.status === 'completed') {
+                        updateProgress('Analysis completed! Displaying results...');
+                        
+                        // Get project list from stored data
+                        const projectList = Object.values(crossProjectData);
+                        
+                        // Add debugging and null checks
+                        console.log('Status object:', status);
+                        console.log('Status result:', status.result);
+                        
+                        if (!status.result) {
+                            console.error('No result data in completed status');
+                            showToast('Error: Analysis completed but no results received', 'error');
+                            return;
+                        }
+                        
+                        // Display results
+                        displayCrossProjectResults(status.result, projectList);
+                        
+                        showToast('Cross-project analysis completed successfully!', 'success');
+                        return;
+                        
+                    } else if (status.status === 'error') {
+                        throw new Error(status.error || 'Analysis failed');
+                        
+                    } else if (status.status === 'processing') {
+                        updateProgress(status.progress || 'Processing cross-project analysis...');
+                        
+                        // Wait 5 seconds before next poll
+                        await new Promise(resolve => setTimeout(resolve, 5000));
+                        attempts++;
+                        
+                    } else {
+                        updateProgress(`Status: ${status.status} - continuing to poll...`);
+                        await new Promise(resolve => setTimeout(resolve, 3000));
+                        attempts++;
+                    }
+                    
+                } catch (error) {
+                    console.error('Polling error:', error);
+                    attempts++;
+                    
+                    if (attempts >= maxAttempts) {
+                        throw error;
+                    }
+                    
+                    updateProgress(`Polling attempt ${attempts}/${maxAttempts} - retrying...`);
+                    await new Promise(resolve => setTimeout(resolve, 5000));
+                }
+            }
+            
+            throw new Error('Analysis timeout: exceeded maximum polling attempts');
+        }
+        
+        function updateProgress(message) {
+            const progressContent = document.getElementById('progressContent');
+            if (progressContent) {
+                progressContent.innerHTML = `
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-2 mb-0">${message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function displayCrossProjectResults(results, projectList) {
+            // Store data for modal access
+            window.currentCrossProjectData = results;
+            
+            // Add null check for results
+            if (!results) {
+                console.error('Results is undefined or null');
+                showToast('Error: No results data received', 'error');
+                return;
+            }
+            
+            // Determine threshold
+            let threshold = parseFloat(results.threshold || document.getElementById('crossProjectThresholdRange')?.value || '0.7');
+            
+            // Prepare project pairs for analysis
+            const projectPairs = [];
+            
+            // Use project pairs directly from backend if available
+            if (results.cross_project_analysis && results.cross_project_analysis.project_pairs) {
+                // Use backend-generated project pairs data
+                const backendPairs = results.cross_project_analysis.project_pairs;
+                backendPairs.forEach(backendPair => {
+                    // Map backend data to our display format
+                    projectPairs.push({
+                        projectA: backendPair.projectA,
+                        projectB: backendPair.projectB,
+                        max_similarity: backendPair.max_similarity || 0,
+                        mean_similarity: backendPair.mean_similarity || 0,
+                        total_pairs: backendPair.total_pairs || 0,
+                        plagiarized_pairs: backendPair.plagiarized_pairs || 0,
+                        similar_pairs: (backendPair.total_pairs - backendPair.plagiarized_pairs - (backendPair.safe_pairs || 0)) || 0,
+                        safe_pairs: backendPair.safe_pairs || 0,
+                        top_file_pairs: (backendPair.top_file_pairs || []).map(pair => ({
+                            file1: pair.repo_a_file || pair.file1,
+                            file2: pair.repo_b_file || pair.file2,
+                            similarity: pair.similarity
+                        })),
+                        comparisons: backendPair.detailed_comparisons || []
+                    });
+                });
+            } else {
+                // Fallback to manual grouping if backend data not available
+                if (results.comparisons && results.comparisons.length > 0) {
+                    const pairMap = new Map();
+                    
+                    results.comparisons.forEach(comp => {
+                        const projectA = getProjectFromFile(comp.file1_name);
+                        const projectB = getProjectFromFile(comp.file2_name);
+                        
+                        // Only include cross-project comparisons
+                        if (projectA !== projectB) {
+                            const pairKey = [projectA, projectB].sort().join(' vs ');
+                            
+                            if (!pairMap.has(pairKey)) {
+                                pairMap.set(pairKey, {
+                                    projectA: projectA,
+                                    projectB: projectB,
+                                    comparisons: [],
+                                    max_similarity: 0,
+                                    mean_similarity: 0,
+                                    total_pairs: 0,
+                                    plagiarized_pairs: 0,
+                                    similar_pairs: 0,
+                                    safe_pairs: 0,
+                                    top_file_pairs: []
+                                });
+                            }
+                            
+                            const pair = pairMap.get(pairKey);
+                            pair.comparisons.push(comp);
+                            pair.total_pairs++;
+                            
+                            // Update statistics
+                            if (comp.similarity_score > pair.max_similarity) {
+                                pair.max_similarity = comp.similarity_score;
+                            }
+                            
+                            // Categorize comparison
+                            if (comp.similarity_score >= threshold) {
+                                pair.plagiarized_pairs++;
+                            } else if (comp.similarity_score >= 0.5) {
+                                pair.similar_pairs++;
+                            } else {
+                                pair.safe_pairs++;
+                            }
+                            
+                            // Add to top file pairs
+                            pair.top_file_pairs.push({
+                                file1: comp.file1_name,
+                                file2: comp.file2_name,
+                                similarity: comp.similarity_score
+                            });
+                        }
+                    });
+                    
+                    // Process each pair
+                    pairMap.forEach(pair => {
+                        // Calculate mean similarity
+                        const totalSim = pair.comparisons.reduce((sum, comp) => sum + comp.similarity_score, 0);
+                        pair.mean_similarity = totalSim / pair.total_pairs;
+                        
+                        // Sort and keep top 5 file pairs
+                        pair.top_file_pairs.sort((a, b) => b.similarity - a.similarity);
+                        pair.top_file_pairs = pair.top_file_pairs.slice(0, 5);
+                        
+                        projectPairs.push(pair);
+                    });
+                }
+            }
+            
+            // Calculate metrics
+            const totalProjects = projectList.length;
+            const totalComparisons = projectPairs.reduce((sum, pair) => sum + pair.total_pairs, 0);
+            const plagiarismPairs = projectPairs.filter(pair => pair.plagiarized_pairs > 0).length;
+            
+            // Show container
+            document.getElementById('sampleResults')?.classList.add('d-none');
+            const container = document.getElementById('resultsContainer');
+            if (container) {
+                container.classList.remove('d-none');
+                
+                // Update summary metrics
+                document.getElementById('filesCount').textContent = totalProjects;
+                document.getElementById('comparisons').textContent = projectPairs.length;
+                document.getElementById('plagiarismCount').textContent = plagiarismPairs;
+                document.getElementById('processingTime').textContent = (results.processing_time || '0') + ' detik';
+            }
+            
+            // Build summary alert
+            const hasPlagiarism = plagiarismPairs > 0;
+            const anyModerate = projectPairs.some(pair => pair.similar_pairs > 0);
+            let summaryHTML = '';
+            
+            if (hasPlagiarism) {
+                summaryHTML = `<div class="alert alert-danger"><h6><i class="fas fa-exclamation-triangle"></i> Plagiarisme Antar-Project Terdeteksi!</h6><p>Beberapa pasangan project memiliki kemiripan di atas ambang batas (≥${(threshold*100).toFixed(0)}%).</p></div>`;
+            } else if (anyModerate) {
+                summaryHTML = `<div class="alert alert-warning"><h6><i class="fas fa-eye"></i> Kemiripan Menengah Antar-Project</h6><p>Ada pasangan project dengan kemiripan 50%-${(threshold*100-1).toFixed(0)}%.</p></div>`;
+            } else {
+                summaryHTML = `<div class="alert alert-success"><h6><i class="fas fa-check-circle"></i> Tidak Ada Plagiarisme Antar-Project</h6><p>Tidak ditemukan kemiripan signifikan antar project (≥50%).</p></div>`;
+            }
+            
+            // Render project pairs table
+            const resultsDiv = document.getElementById('detectionResults');
+            const table = renderProjectPairsTable(projectPairs, threshold);
+            resultsDiv.innerHTML = summaryHTML + table;
+            
+            // Setup matrices for TF-IDF and similarity analysis
+            const matrixRow = document.getElementById('matrixRow');
+            if (matrixRow && results.tfidf && results.similarity_matrix) {
+                let matrixHTML = '';
+                
+                // Prepare fileNames from all projects
+                const allFileNames = [];
+                projectList.forEach(project => {
+                    project.files.forEach(file => {
+                        allFileNames.push(file.name);
+                    });
+                });
+                
+                // TF-IDF Matrix
+                if (results.tfidf && results.tfidf.featureNames && results.tfidf.matrix) {
+                    matrixHTML += `<div class='col-12'>
+    <div class='cg-matrix-container'>
+        <div class='d-flex justify-content-between align-items-center mb-2'>
+            <div class='cg-matrix-title'><i class="fas fa-layer-group"></i> TF-IDF Matrix (Top 30)</div>
+            <div class='cg-toolbar'>
+                <button class='cg-btn-icon' onclick="toggleMatrixSection('tfidfMatrixBody')"><i class='fas fa-eye'></i>Toggle</button>
+            </div>
+        </div>
+        <div id='tfidfMatrixBody'>${renderTfidfMatrix(results.tfidf.featureNames, results.tfidf.matrix, allFileNames)}</div>
+    </div>
+</div>`;
+                }
+                
+                // Similarity Matrix
+                if (results.similarity_matrix) {
+                    matrixHTML += `<div class='col-12'>
+    <div class='cg-matrix-container'>
+        <div class='d-flex justify-content-between align-items-center mb-2'>
+            <div class='cg-matrix-title'><i class="fas fa-table"></i> Cosine Similarity Matrix</div>
+            <div class='cg-toolbar'>
+                <button class='cg-btn-icon' onclick="toggleMatrixSection('simMatrixBody')"><i class='fas fa-eye'></i>Toggle</button>
+            </div>
+        </div>
+        <div id='simMatrixBody'>${renderSimilarityMatrix(allFileNames, results.similarity_matrix)}</div>
+    </div>
+</div>`;
+                }
+                
+                // TF-IDF Vector Analysis
+                if (results.tfidf) {
+                    matrixHTML += `<div class='col-12'>
+    <div class='cg-matrix-container'>
+        <div class='d-flex justify-content-between align-items-center mb-2'>
+            <div class='cg-matrix-title'><i class="fas fa-chart-line"></i> TF-IDF Vector Analysis</div>
+            <div class='cg-toolbar'>
+                <button class='cg-btn-icon' onclick="toggleMatrixSection('tfidfVectorBody')"><i class='fas fa-eye'></i>Toggle</button>
+            </div>
+        </div>
+        <div id='tfidfVectorBody'>${renderTfidfVectorAnalysis(results.tfidf, allFileNames)}</div>
+    </div>
+</div>`;
+                }
+                
+                // Cosine Similarity Analysis
+                if (results.similarity_matrix) {
+                    matrixHTML += `<div class='col-12'>
+    <div class='cg-matrix-container'>
+        <div class='d-flex justify-content-between align-items-center mb-2'>
+            <div class='cg-matrix-title'><i class="fas fa-calculator"></i> Cosine Similarity Analysis</div>
+            <div class='cg-toolbar'>
+                <button class='cg-btn-icon' onclick="toggleMatrixSection('cosineAnalysisBody')"><i class='fas fa-eye'></i>Toggle</button>
+            </div>
+        </div>
+        <div id='cosineAnalysisBody'>${renderCosineSimilarityAnalysis(results.similarity_matrix, allFileNames)}</div>
+    </div>
+</div>`;
+                }
+                
+                matrixRow.innerHTML = matrixHTML;
+            }
+            
+            // Update distribution chart
+            const scores = projectPairs.map(pair => pair.max_similarity);
+            const bins = [0, 0.5, threshold, 1.01];
+            const binLabels = [
+                `Aman (<50%)`,
+                `Mirip (50%-${(threshold*100-1).toFixed(0)}%)`,
+                `Plagiat (≥${(threshold*100).toFixed(0)}%)`
+            ];
+            const binColors = ['#28a745', '#ffc107', '#dc3545'];
+            const binCounts = [0, 0, 0];
+            
+            scores.forEach(s => {
+                if (s < 0.5) binCounts[0]++;
+                else if (s < threshold) binCounts[1]++;
+                else binCounts[2]++;
+            });
+            
+            const ctx = document.getElementById('similarityChart').getContext('2d');
+            if (window.similarityChartInstance) {
+                window.similarityChartInstance.destroy();
+            }
+            
+            window.similarityChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: binLabels,
+                    datasets: [{
+                        label: 'Distribusi Kemiripan (Project Pairs)',
+                        data: binCounts,
+                        backgroundColor: binColors
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: `Distribusi Kemiripan Antar-Project (Threshold: ${(threshold*100).toFixed(0)}%)`
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Jumlah Pasangan Project' }
+                        },
+                        x: {
+                            title: { display: true, text: 'Kategori Kemiripan' }
+                        }
+                    }
+                }
+            });
+            
+            // Show success message
+            const crossProjectResults = document.getElementById('crossProjectResults');
+            if (crossProjectResults) {
+                crossProjectResults.style.display = 'block';
+            }
+            
+            // Hide progress
+            const crossProjectProgress = document.getElementById('crossProjectProgress');
+            if (crossProjectProgress) {
+                crossProjectProgress.style.display = 'none';
+            }
+            
+            // Scroll to results
+            if (container) {
+                container.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        
+        function renderProjectPairsTable(projectPairs, threshold) {
+            if (!Array.isArray(projectPairs) || projectPairs.length === 0) {
+                return `<div class='alert alert-warning'>Tidak ada pasangan project untuk ditampilkan.</div>`;
+            }
+            
+            let html = `<div class='enhanced-cross-project-header mb-4'>
+                <h5 class='mb-3'><i class="fas fa-project-diagram text-primary"></i> Cross-Project Analysis Results</h5>
+                <div class='small text-muted mb-3'>Detailed comparison between projects with smart categorization and risk assessment</div>
+                </div>
+                <div class='table-responsive enhanced-table-wrapper'><table class='table table-hover table-striped enhanced-table align-middle'>
+                <thead class='table-dark enhanced-header'>
+                    <tr>
+                        <th><i class="fas fa-layer-group"></i> Project Pair</th>
+                        <th><i class="fas fa-chart-line"></i> Max Similarity</th>
+                        <th><i class="fas fa-calculator"></i> Avg Similarity</th>
+                        <th><i class="fas fa-shield-alt"></i> Risk Status</th>
+                        <th><i class="fas fa-list-ol"></i> Breakdown</th>
+                        <th><i class="fas fa-star"></i> Top Matches</th>
+                        <th><i class="fas fa-cog"></i> Actions</th>
+                    </tr>
+                </thead><tbody>`;
+            
+            projectPairs.forEach(pair => {
+                const maxSim = (pair.max_similarity || 0).toFixed(3);
+                const meanSim = (pair.mean_similarity || 0).toFixed(3);
+                
+                // Determine overall status based on presence of plagiarized files
+                let statusBadge, statusText;
+                if (pair.plagiarized_pairs > 0) {
+                    statusBadge = '<span class="badge bg-danger">Plagiat</span>';
+                    statusText = 'danger';
+                } else if (pair.similar_pairs > 0) {
+                    statusBadge = '<span class="badge bg-warning text-dark">Mirip</span>';
+                    statusText = 'warning';
+                } else {
+                    statusBadge = '<span class="badge bg-success">Aman</span>';
+                    statusText = 'success';
+                }
+                
+                // Breakdown of comparisons
+                const breakdown = `
+                    <div class="small">
+                        <div class="d-flex justify-content-between">
+                            <span>Plagiat:</span>
+                            <span class="badge bg-danger">${pair.plagiarized_pairs}</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Mirip:</span>
+                            <span class="badge bg-warning text-dark">${pair.similar_pairs}</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Aman:</span>
+                            <span class="badge bg-success">${pair.safe_pairs}</span>
+                        </div>
+                        <hr class="my-1">
+                        <div class="d-flex justify-content-between fw-bold">
+                            <span>Total:</span>
+                            <span class="badge bg-secondary">${pair.total_pairs}</span>
+                        </div>
+                    </div>
+                `;
+                
+                // Top file pairs
+                let topPairs = '-';
+                if (Array.isArray(pair.top_file_pairs) && pair.top_file_pairs.length > 0) {
+                    topPairs = '<div class="small" style="max-height: 120px; overflow-y: auto;">';
+                    pair.top_file_pairs.forEach(top => {
+                        const similarity = (top.similarity * 100).toFixed(1);
+                        let badgeClass = 'bg-success';
+                        if (top.similarity >= threshold) {
+                            badgeClass = 'bg-danger';
+                        } else if (top.similarity >= 0.5) {
+                            badgeClass = 'bg-warning text-dark';
+                        }
+                        
+                        topPairs += `
+                            <div class="mb-1 p-1 border rounded">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1" style="font-size: 0.85em;">
+                                        <div class="text-truncate" title="${escapeHtml(top.file1)}">
+                                            📄 ${escapeHtml(top.file1.length > 20 ? '...' + top.file1.slice(-20) : top.file1)}
+                                        </div>
+                                        <div class="text-muted text-truncate" title="${escapeHtml(top.file2)}">
+                                            📄 ${escapeHtml(top.file2.length > 20 ? '...' + top.file2.slice(-20) : top.file2)}
+                                        </div>
+                                    </div>
+                                    <span class="badge ${badgeClass} ms-1">${similarity}%</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    topPairs += '</div>';
+                }
+                
+                html += `<tr class="enhanced-row table-${statusText === 'danger' ? 'danger' : statusText === 'warning' ? 'warning' : 'success'} bg-opacity-15" data-pair-index="${projectPairs.indexOf(pair)}">
+                    <td>
+                        <div class="project-pair-cell">
+                            <div class="project-names-enhanced">
+                                <span class="project-badge-a">${escapeHtml(pair.projectA)}</span>
+                                <i class="fas fa-arrows-alt-h text-muted mx-2"></i>
+                                <span class="project-badge-b">${escapeHtml(pair.projectB)}</span>
+                            </div>
+                            <small class="text-muted">${pair.total_pairs} comparisons total</small>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <div class="similarity-cell">
+                            <span class="similarity-badge-large bg-${statusText === 'danger' ? 'danger' : statusText === 'warning' ? 'warning' : 'success'}">
+                                ${(maxSim * 100).toFixed(1)}%
+                            </span>
+                            <div class="similarity-bar-container">
+                                <div class="similarity-bar bg-${statusText === 'danger' ? 'danger' : statusText === 'warning' ? 'warning' : 'success'}" 
+                                     style="width: ${(maxSim * 100)}%"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <span class="avg-similarity">${(meanSim * 100).toFixed(1)}%</span>
+                    </td>
+                    <td class="text-center">
+                        <div class="status-cell">
+                            ${statusBadge}
+                            <div class="risk-indicator ${statusText}"></div>
+                        </div>
+                    </td>
+                    <td class="breakdown-cell">${breakdown}</td>
+                    <td style="max-width: 250px;" class="top-pairs-cell">${topPairs}</td>
+                    <td>
+                        <div class="action-buttons-enhanced">
+                            <button class="btn btn-outline-primary btn-sm detail-btn" 
+                                    data-project-a="${pair.projectA}" 
+                                    data-project-b="${pair.projectB}" 
+                                    data-pair-index="${projectPairs.indexOf(pair)}"
+                                    onclick="showPairDetailModalByData(this)" 
+                                    title="View detailed comparison">
+                                <i class="fas fa-search-plus"></i> Detail
+                            </button>
+                            <button class="btn btn-outline-info btn-sm mt-1" 
+                                    data-project-a="${pair.projectA}" 
+                                    data-project-b="${pair.projectB}" 
+                                    data-pair-index="${projectPairs.indexOf(pair)}"
+                                    onclick="downloadPairReportByData(this)" 
+                                    title="Download detailed report">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                    </td>
+                </tr>`;
+            });
+            
+            html += `</tbody></table></div>`;
+            
+            // Add summary statistics
+            const totalPairs = projectPairs.length;
+            const plagiarismPairs = projectPairs.filter(pair => pair.plagiarized_pairs > 0).length;
+            const similarPairs = projectPairs.filter(pair => pair.similar_pairs > 0 && pair.plagiarized_pairs === 0).length;
+            const safePairs = projectPairs.filter(pair => pair.plagiarized_pairs === 0 && pair.similar_pairs === 0).length;
+            
+            html += `
+                <div class="mt-3">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="card border-danger">
+                                <div class="card-body">
+                                    <h5 class="card-title text-danger">${plagiarismPairs}</h5>
+                                    <p class="card-text small">Project Pairs dengan Plagiarisme</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-warning">
+                                <div class="card-body">
+                                    <h5 class="card-title text-warning">${similarPairs}</h5>
+                                    <p class="card-text small">Project Pairs dengan Kemiripan</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-success">
+                                <div class="card-body">
+                                    <h5 class="card-title text-success">${safePairs}</h5>
+                                    <p class="card-text small">Project Pairs Aman</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-primary">
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary">${totalPairs}</h5>
+                                    <p class="card-text small">Total Project Pairs</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            return html;
+        }
+
+        function addCrossProjectMatrix(results, projectList) {
+            const detectionResultsElement = document.getElementById('detectionResults');
+            let currentContent = detectionResultsElement.innerHTML;
+            
+            let crossProjectHTML = `
+                ${currentContent}
+                
+                <!-- Cross-Project Matrix -->
+                <div class="mt-4 border-top pt-4">
+                    <h6 class="text-primary mb-3"><i class="fas fa-layer-group"></i> Cross-Project Similarity Matrix</h6>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-bordered text-center">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Project</th>
+                                    ${projectList.map(p => `<th class="small">${p.name}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${projectList.map((projectA, indexA) => `
+                                    <tr>
+                                        <td class="fw-bold table-primary">${projectA.name}</td>
+                                        ${projectList.map((projectB, indexB) => {
+                                            if (indexA === indexB) {
+                                                return '<td class="bg-success text-white fw-bold">1.00</td>';
+                                            } else {
+                                                const similarity = calculateProjectSimilarity(results, projectA.name, projectB.name);
+                                                const decimal = (similarity * 1).toFixed(2);
+                                                const colorClass = getSimilarityColorClass(similarity);
+                                                return `<td class="bg-${colorClass} text-white fw-bold">${decimal}</td>`;
+                                            }
+                                        }).join('')}
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- TF-IDF Analysis -->
+                    <h6 class="text-info mb-3"><i class="fas fa-chart-bar"></i> TF-IDF Vector Analysis</h6>
+                    <div class="row mb-4">
+                        ${projectList.map((project, index) => {
+                            const colorClass = ['primary', 'success', 'info', 'warning', 'secondary', 'dark'][index % 6];
+                            return `
+                                <div class="col-md-6 col-lg-4 mb-3">
+                                    <div class="card border-${colorClass}">
+                                        <div class="card-header bg-${colorClass} text-white">
+                                            <h6 class="mb-0"><i class="fas fa-cube"></i> ${project.name}</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-2">
+                                                <small class="text-muted">Files:</small>
+                                                <span class="fw-bold">${project.fileCount}</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <small class="text-muted">Est. Tokens:</small>
+                                                <span class="fw-bold">${estimateProjectTokens(project)}</span>
+                                            </div>
+                                            <div class="progress" style="height: 8px;">
+                                                <div class="progress-bar bg-${colorClass}" 
+                                                     style="width: ${Math.min(100, project.fileCount * 10)}%"></div>
+                                            </div>
+                                            <small class="text-muted">Vector density</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    
+                    <!-- Cosine Similarity Info -->
+                    <div class="alert alert-info">
+                        <h6 class="text-primary"><i class="fas fa-calculator"></i> Cosine Similarity Computation</h6>
+                        <small>
+                            <strong>Formula:</strong> cos(θ) = (A · B) / (||A|| × ||B||)<br>
+                            <strong>Range:</strong> 0.0 (completely different) to 1.0 (identical)<br>
+                            <strong>TF-IDF:</strong> Term Frequency × Inverse Document Frequency weighting
+                        </small>
+                    </div>
+                </div>
+                
+                <!-- Detailed Comparisons -->
+                <h6 class="text-success mb-3"><i class="fas fa-list"></i> Detailed Cross-Project Comparisons</h6>
+                <div class="accordion" id="crossProjectAccordion">
+            `;
+            
+            // Detailed comparisons
+            if (results.comparisons && results.comparisons.length > 0) {
+                results.comparisons.forEach((comparison, index) => {
+                    const similarity = Math.round(comparison.similarity_score * 100);
+                    const colorClass = getSimilarityColorClass(comparison.similarity_score);
+                    
+                    crossProjectHTML += `
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#crossProjectCollapse${index}">
+                                    <i class="fas fa-code me-2"></i>
+                                    ${comparison.file1_name} vs ${comparison.file2_name}
+                                    <span class="ms-auto badge bg-${colorClass}">${similarity}%</span>
+                                </button>
+                            </h2>
+                            <div id="crossProjectCollapse${index}" class="accordion-collapse collapse" data-bs-parent="#crossProjectAccordion">
+                                <div class="accordion-body">
+                                    <div class="row mb-3">
+                                        <div class="col-md-4">
+                                            <small class="text-muted"><strong>File 1:</strong> ${comparison.file1_name}</small><br>
+                                            <small class="text-muted"><strong>Project:</strong> ${getProjectFromFile(comparison.file1_name)}</small>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <small class="text-muted"><strong>File 2:</strong> ${comparison.file2_name}</small><br>
+                                            <small class="text-muted"><strong>Project:</strong> ${getProjectFromFile(comparison.file2_name)}</small>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="text-center">
+                                                <h6 class="text-primary mb-1">Cosine Similarity</h6>
+                                                <div class="badge bg-${colorClass} fs-6">${similarity}%</div>
+                                                <small class="d-block text-muted mt-1">Threshold: ${Math.round((results.threshold || 0.7) * 100)}%</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- TF-IDF Analysis -->
+                                    ${comparison.analysis_details ? `
+                                        <div class="mb-3">
+                                            <h6 class="text-info"><i class="fas fa-chart-line"></i> TF-IDF Analysis</h6>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="bg-light p-2 rounded">
+                                                        <small class="fw-bold d-block">Tokens Count: ${comparison.analysis_details.tokens1_count || 'N/A'}</small>
+                                                        <small class="text-muted">Vector dimension for ${comparison.file1_name}</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="bg-light p-2 rounded">
+                                                        <small class="fw-bold d-block">Tokens Count: ${comparison.analysis_details.tokens2_count || 'N/A'}</small>
+                                                        <small class="text-muted">Vector dimension for ${comparison.file2_name}</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="mt-2">
+                                                <div class="bg-info bg-opacity-10 p-2 rounded">
+                                                    <small class="fw-bold">Token Overlap: ${comparison.analysis_details.token_overlap || 'N/A'}</small>
+                                                    <small class="text-muted d-block">Common tokens between both files</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ` : ''}
+                                    
+                                    ${comparison.matches && comparison.matches.length > 0 ? `
+                                        <div class="mt-3">
+                                            <h6 class="text-primary">Similar Code Blocks Found:</h6>
+                                            <div class="accordion" id="accordion_${index}">
+                                                ${comparison.matches.map((match, matchIndex) => `
+                                                    <div class="accordion-item">
+                                                        <h2 class="accordion-header">
+                                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_${index}_${matchIndex}">
+                                                                Block ${matchIndex + 1} - Similarity: ${Math.round(match.similarity * 100)}%
+                                                            </button>
+                                                        </h2>
+                                                        <div id="collapse_${index}_${matchIndex}" class="accordion-collapse collapse" data-bs-parent="#accordion_${index}">
+                                                            <div class="accordion-body">
+                                                                <div class="row">
+                                                                    <div class="col-md-6">
+                                                                        <h6>File 1:</h6>
+                                                                        <pre class="bg-light p-2 small">${escapeHtml(match.code1 || 'Code not available')}</pre>
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <h6>File 2:</h6>
+                                                                        <pre class="bg-light p-2 small">${escapeHtml(match.code2 || 'Code not available')}</pre>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                `).join('')}
+                                            </div>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            crossProjectHTML += `
+                </div>
+            `;
+            
+            detectionResultsElement.innerHTML = crossProjectHTML;
+        }
+        
+        function calculateProjectSimilarity(results, projectA, projectB) {
+            if (!results.comparisons) return 0;
+            
+            // Find comparisons between files from different projects
+            const crossComparisons = results.comparisons.filter(comp => {
+                const proj1 = getProjectFromFile(comp.file1_name);
+                const proj2 = getProjectFromFile(comp.file2_name);
+                return (proj1 === projectA && proj2 === projectB) || 
+                       (proj1 === projectB && proj2 === projectA);
+            });
+            
+            if (crossComparisons.length === 0) return 0;
+            
+            // Calculate average similarity
+            const avgSimilarity = crossComparisons.reduce((sum, comp) => 
+                sum + comp.similarity_score, 0) / crossComparisons.length;
+            
+            return avgSimilarity;
+        }
+        
+        function getProjectFromFile(fileName) {
+            // Extract project name from file mapping or file name
+            for (const [key, value] of Object.entries(crossProjectData)) {
+                if (value.files && value.files.hasOwnProperty(fileName)) {
+                    return key; // This is the project name
+                }
+            }
+            // Fallback: extract project from file path structure
+            const pathParts = fileName.split('/');
+            return pathParts[0] || 'unknown_project';
+        }
+        
+        function getSimilarityColorClass(similarity) {
+            if (similarity >= 0.7) return 'danger';
+            if (similarity >= 0.5) return 'warning';
+            if (similarity >= 0.3) return 'info';
+            return 'light';
+        }
+        
+        function updateMainResultsStats(results, projectList) {
+            // Count total files across all projects
+            const totalFiles = projectList.reduce((sum, project) => sum + project.fileCount, 0);
+            
+            // Count comparisons and plagiarism cases
+            const totalComparisons = results.comparisons ? results.comparisons.length : 0;
+            const plagiarismCases = results.comparisons ? results.comparisons.filter(comp => comp.similarity_score >= 0.7).length : 0;
+            
+            // Update statistics cards
+            document.getElementById('filesCount').textContent = totalFiles;
+            document.getElementById('comparisons').textContent = totalComparisons;
+            document.getElementById('plagiarismCount').textContent = plagiarismCases;
+            document.getElementById('processingTime').textContent = results.processing_time ? results.processing_time + 's' : 'N/A';
+        }
+        
+        function generateTFIDFDisplay(results, projectList) {
+            let html = '';
+            
+            // Show TF-IDF overview for each project
+            projectList.forEach((project, index) => {
+                const colorClass = ['primary', 'success', 'info', 'warning', 'secondary', 'dark'][index % 6];
+                
+                html += `
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card border-${colorClass}">
+                            <div class="card-header bg-${colorClass} text-white">
+                                <h6 class="mb-0"><i class="fas fa-cube"></i> ${project.name}</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-2">
+                                    <small class="text-muted">Files:</small>
+                                    <span class="fw-bold">${project.fileCount}</span>
+                                </div>
+                                <div class="mb-2">
+                                    <small class="text-muted">Est. Total Tokens:</small>
+                                    <span class="fw-bold">${estimateProjectTokens(project)}</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-${colorClass}" 
+                                         style="width: ${Math.min(100, project.fileCount * 10)}%"></div>
+                                </div>
+                                <small class="text-muted">Vector density</small>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            return html;
+        }
+        
+        function estimateProjectTokens(project) {
+            // Estimate based on file count (rough approximation)
+            return project.fileCount * 150 + ' - ' + project.fileCount * 300;
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Enhanced Detail Modal Functions
+        function showPairDetailModal(projectA, projectB, pairIndex) {
+            console.log('showPairDetailModal called with:', projectA, projectB, pairIndex);
+            console.log('window.currentCrossProjectData:', window.currentCrossProjectData);
+            
+            const modalHtml = `
+                <div id="pairDetailModal" class="pair-detail-modal">
+                    <div class="pair-detail-content">
+                        <span class="modal-close" onclick="closePairDetailModal()">&times;</span>
+                        <div class="modal-header">
+                            <h4><i class="fas fa-search-plus text-primary"></i> Detailed Comparison</h4>
+                            <p class="text-muted mb-0">${projectA} <i class="fas fa-arrows-alt-h"></i> ${projectB}</p>
+                        </div>
+                        <div class="modal-body">
+                            <div id="modalContent">
+                                <div class="text-center">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2">Loading detailed comparison...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Remove existing modal if any
+            const existingModal = document.getElementById('pairDetailModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            // Add new modal to body
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+            // Show modal
+            const modal = document.getElementById('pairDetailModal');
+            modal.style.display = 'flex';
+            
+            // Add click outside to close
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closePairDetailModal();
+                }
+            });
+            
+            // Load detailed content
+            loadDetailedComparison(projectA, projectB, pairIndex);
+        }
+        
+        function closePairDetailModal() {
+            const modal = document.getElementById('pairDetailModal');
+            if (modal) {
+                modal.style.display = 'none';
+                setTimeout(() => modal.remove(), 300);
+            }
+        }
+        
+        function loadDetailedComparison(projectA, projectB, pairIndex) {
+            console.log('loadDetailedComparison called with:', projectA, projectB, pairIndex);
+            // Get data from global crossProjectResults or fetch from server
+            const modalContent = document.getElementById('modalContent');
+            
+            try {
+                if (!window.currentCrossProjectData?.cross_project_analysis?.project_pairs) {
+                    console.warn('No cross project data available');
+                    modalContent.innerHTML = '<div class="alert alert-danger">No cross-project data available. Please run analysis first.</div>';
+                    return;
+                }
+                
+                const allPairs = window.currentCrossProjectData.cross_project_analysis.project_pairs;
+                console.log('All available pairs:', allPairs.map(p => `${p.projectA} vs ${p.projectB}`));
+                console.log('Looking for:', `${projectA} vs ${projectB}`);
+                console.log('Comparison details:');
+                allPairs.slice(0, 3).forEach(p => {
+                    console.log(`  Backend pair: "${p.projectA}" vs "${p.projectB}"`);
+                    console.log(`  Exact match A: ${p.projectA === projectA}, Exact match B: ${p.projectB === projectB}`);
+                    console.log(`  Reverse match A: ${p.projectA === projectB}, Reverse match B: ${p.projectB === projectA}`);
+                });
+                
+                // Find the project pair data with flexible matching
+                let pairData = allPairs.find(pair => {
+                    // Exact match first
+                    if ((pair.projectA === projectA && pair.projectB === projectB) || 
+                        (pair.projectA === projectB && pair.projectB === projectA)) {
+                        return true;
+                    }
+                    
+                    // Partial match - check if names contain the search terms
+                    const aMatches = pair.projectA.includes(projectA) || projectA.includes(pair.projectA);
+                    const bMatches = pair.projectB.includes(projectB) || projectB.includes(pair.projectB);
+                    
+                    return (aMatches && bMatches) || 
+                           (pair.projectA.includes(projectB) && pair.projectB.includes(projectA));
+                });
+                
+                console.log('Found pair data in loadDetailedComparison:', pairData);
+                
+                if (pairData) {
+                    const detailHtml = generateDetailModalContent(pairData, projectA, projectB);
+                    modalContent.innerHTML = detailHtml;
+                } else {
+                    console.warn('No pair data found for:', projectA, 'vs', projectB);
+                    
+                    // Show available pairs for debugging - limit to first 10 for readability
+                    const availableList = allPairs.slice(0, 10).map(p => `<li><code>${p.projectA}</code> vs <code>${p.projectB}</code></li>`).join('');
+                    const totalPairs = allPairs.length;
+                    
+                    modalContent.innerHTML = `
+                        <div class="alert alert-warning">
+                            <h5><i class="fas fa-exclamation-triangle"></i> Detailed data not found</h5>
+                            <p><strong>Requested:</strong> <code>${projectA}</code> vs <code>${projectB}</code></p>
+                            <div class="mt-3">
+                                <strong>Available pairs (showing first 10 of ${totalPairs}):</strong>
+                                <ul class="list-unstyled mt-2" style="max-height: 200px; overflow-y: auto; background: #f8f9fa; padding: 1rem; border-radius: 5px;">
+                                    ${availableList}
+                                </ul>
+                                ${totalPairs > 10 ? `<p><small class="text-muted">... and ${totalPairs - 10} more pairs</small></p>` : ''}
+                            </div>
+                            <button class="btn btn-sm btn-outline-secondary mt-2" onclick="console.log('All pairs:', window.currentCrossProjectData.cross_project_analysis.project_pairs)">
+                                <i class="fas fa-bug"></i> Debug: Log all pairs to console
+                            </button>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error in loadDetailedComparison:', error);
+                modalContent.innerHTML = '<div class="alert alert-danger">Error loading detailed comparison: ' + error.message + '</div>';
+            }
+        }
+        
+        function generateDetailModalContent(pairData, projectA, projectB) {
+            let html = `
+                <div class="detail-stats-row">
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="stat-card-mini bg-primary text-white p-3 rounded text-center">
+                                <div class="h4 mb-0">${(pairData.max_similarity * 100).toFixed(1)}%</div>
+                                <div class="small">Max Similarity</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card-mini bg-info text-white p-3 rounded text-center">
+                                <div class="h4 mb-0">${(pairData.mean_similarity * 100).toFixed(1)}%</div>
+                                <div class="small">Avg Similarity</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card-mini bg-danger text-white p-3 rounded text-center">
+                                <div class="h4 mb-0">${pairData.plagiarized_pairs}</div>
+                                <div class="small">Plagiarized</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card-mini bg-success text-white p-3 rounded text-center">
+                                <div class="h4 mb-0">${pairData.total_pairs}</div>
+                                <div class="small">Total Pairs</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detail-comparisons">
+                    <h5><i class="fas fa-list"></i> File-by-File Comparisons</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>File A</th>
+                                    <th>File B</th>
+                                    <th>Similarity</th>
+                                    <th>Status</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+            
+            if (pairData.detailed_comparisons) {
+                pairData.detailed_comparisons.forEach(comp => {
+                    const similarity = (comp.similarity_score * 100).toFixed(1);
+                    const isPlagiarized = comp.similarity_score >= 0.7;
+                    const statusClass = isPlagiarized ? 'danger' : (comp.similarity_score >= 0.5 ? 'warning' : 'success');
+                    const statusText = isPlagiarized ? 'Plagiarized' : (comp.similarity_score >= 0.5 ? 'Similar' : 'Safe');
+                    
+                    html += `
+                        <tr class="table-${statusClass} bg-opacity-15">
+                            <td><code>${comp.file1_name}</code></td>
+                            <td><code>${comp.file2_name}</code></td>
+                            <td>
+                                <span class="badge bg-${statusClass} fs-6">${similarity}%</span>
+                                <div class="progress mt-1" style="height: 4px;">
+                                    <div class="progress-bar bg-${statusClass}" 
+                                         style="width: ${similarity}%"></div>
+                                </div>
+                            </td>
+                            <td><span class="badge bg-${statusClass}">${statusText}</span></td>
+                            <td>
+                                <small class="text-muted">
+                                    ${comp.analysis_details?.analysis_details ? 
+                                        `Tokens: ${comp.analysis_details.analysis_details.tokens1_count} vs ${comp.analysis_details.analysis_details.tokens2_count}, ` +
+                                        `Overlap: ${comp.analysis_details.analysis_details.token_overlap}` 
+                                        : 'No details available'}
+                                </small>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            
+            html += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            
+            return html;
+        }
+        
+        function downloadPairReport(projectA, projectB, pairIndex) {
+            console.log('downloadPairReport called with:', projectA, projectB, pairIndex);
+            console.log('window.currentCrossProjectData:', window.currentCrossProjectData);
+            
+            try {
+                if (!window.currentCrossProjectData?.cross_project_analysis?.project_pairs) {
+                    showToast('No cross-project data available for export', 'error');
+                    return;
+                }
+                
+                const allPairs = window.currentCrossProjectData.cross_project_analysis.project_pairs;
+                
+                // Find the project pair data with flexible matching (same as modal function)
+                const pairData = allPairs.find(pair => {
+                    // Exact match first
+                    if ((pair.projectA === projectA && pair.projectB === projectB) || 
+                        (pair.projectA === projectB && pair.projectB === projectA)) {
+                        return true;
+                    }
+                    
+                    // Partial match - check if names contain the search terms
+                    const aMatches = pair.projectA.includes(projectA) || projectA.includes(pair.projectA);
+                    const bMatches = pair.projectB.includes(projectB) || projectB.includes(pair.projectB);
+                    
+                    return (aMatches && bMatches) || 
+                           (pair.projectA.includes(projectB) && pair.projectB.includes(projectA));
+                });
+                
+                console.log('Found pair data for export:', pairData);
+                
+                if (!pairData) {
+                    showToast(`Report data not found for project pair: ${projectA} vs ${projectB}`, 'error');
+                    return;
+                }
+                
+                // Generate CSV content
+                const csvContent = generatePairReportCSV(pairData, pairData.projectA, pairData.projectB);
+                
+                console.log('Generated CSV content length:', csvContent.length);
+                
+                // Download CSV
+                try {
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement('a');
+                    
+                    if (typeof link.download !== 'undefined') {
+                        const url = URL.createObjectURL(blob);
+                        const fileName = `cross_project_report_${pairData.projectA}_vs_${pairData.projectB}.csv`.replace(/[^a-zA-Z0-9_.-]/g, '_');
+                        
+                        link.setAttribute('href', url);
+                        link.setAttribute('download', fileName);
+                        link.style.visibility = 'hidden';
+                        
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        
+                        // Clean up the URL object
+                        setTimeout(() => URL.revokeObjectURL(url), 100);
+                        
+                        showToast(`Report downloaded: ${fileName}`, 'success');
+                    } else {
+                        // Fallback for older browsers
+                        showToast('Download not supported in this browser', 'error');
+                    }
+                } catch (downloadError) {
+                    console.error('Download error:', downloadError);
+                    showToast('Error creating download file: ' + downloadError.message, 'error');
+                }
+                
+            } catch (error) {
+                console.error('Error in downloadPairReport:', error);
+                showToast('Error downloading report: ' + error.message, 'error');
+            }
+        }
+        
+        function generatePairReportCSV(pairData, projectA, projectB) {
+            let csv = 'Cross-Project Comparison Report\n';
+            csv += `Project A,${projectA}\n`;
+            csv += `Project B,${projectB}\n`;
+            csv += `Max Similarity,${(pairData.max_similarity * 100).toFixed(2)}%\n`;
+            csv += `Mean Similarity,${(pairData.mean_similarity * 100).toFixed(2)}%\n`;
+            csv += `Total Comparisons,${pairData.total_pairs}\n`;
+            csv += `Plagiarized Pairs,${pairData.plagiarized_pairs}\n`;
+            csv += `Similar Pairs,${pairData.similar_pairs || 0}\n`;
+            csv += `Safe Pairs,${pairData.safe_pairs || 0}\n`;
+            csv += '\n';
+            csv += 'File A,File B,Similarity %,Status,Tokens A,Tokens B,Token Overlap\n';
+            
+            if (pairData.detailed_comparisons) {
+                pairData.detailed_comparisons.forEach(comp => {
+                    const similarity = (comp.similarity_score * 100).toFixed(2);
+                    const status = comp.similarity_score >= 0.7 ? 'Plagiarized' : 
+                                  comp.similarity_score >= 0.5 ? 'Similar' : 'Safe';
+                    const tokensA = comp.analysis_details?.analysis_details?.tokens1_count || 'N/A';
+                    const tokensB = comp.analysis_details?.analysis_details?.tokens2_count || 'N/A';
+                    const overlap = comp.analysis_details?.analysis_details?.token_overlap || 'N/A';
+                    
+                    csv += `"${comp.file1_name}","${comp.file2_name}",${similarity}%,${status},${tokensA},${tokensB},${overlap}\n`;
+                });
+            }
+            
+            return csv;
+        }
+        
+        // Store current data globally for modal access
+        window.currentCrossProjectData = null;
+        
+        // Helper functions for data attribute handling
+        function showPairDetailModalByData(buttonElement) {
+            const projectA = buttonElement.getAttribute('data-project-a');
+            const projectB = buttonElement.getAttribute('data-project-b');
+            const pairIndex = parseInt(buttonElement.getAttribute('data-pair-index'));
+            
+            console.log('showPairDetailModalByData called with data attributes:', { projectA, projectB, pairIndex });
+            showPairDetailModal(projectA, projectB, pairIndex);
+        }
+        
+        function downloadPairReportByData(buttonElement) {
+            const projectA = buttonElement.getAttribute('data-project-a');
+            const projectB = buttonElement.getAttribute('data-project-b');
+            const pairIndex = parseInt(buttonElement.getAttribute('data-pair-index'));
+            
+            console.log('downloadPairReportByData called with data attributes:', { projectA, projectB, pairIndex });
+            downloadPairReport(projectA, projectB, pairIndex);
         }
     </script>
 </body>

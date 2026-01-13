@@ -55,9 +55,13 @@ class GitHubRepositoryAnalyzer:
                 logger.warning(f"Download fail {br}: {e}")
         if not zf:
             raise ValueError(f"Cannot download repo. Attempts: {attempts}")
-        py_files: List[tuple] = []
+        code_files: List[tuple] = []
         for fi in zf.filelist:
-            if fi.is_dir() or not fi.filename.endswith('.py'):
+            if fi.is_dir():
+                continue
+            # consider supported extensions
+            fname_lower = fi.filename.lower()
+            if not (fname_lower.endswith('.py') or fname_lower.endswith('.js') or fname_lower.endswith('.jsx') or fname_lower.endswith('.ts') or fname_lower.endswith('.tsx')):
                 continue
             if '__pycache__' in fi.filename or '/.' in fi.filename:
                 continue
@@ -70,21 +74,21 @@ class GitHubRepositoryAnalyzer:
                 if len(content.strip()) < 15:
                     continue
                 name = fi.filename.split('/')[-1]
-                py_files.append((name, content))
-                if len(py_files) >= self.max_files:
+                code_files.append((name, content))
+                if len(code_files) >= self.max_files:
                     break
             except Exception:
                 continue
-        if len(py_files) < 1:
-            raise ValueError('No Python files extracted')
-        return py_files
+        if len(code_files) < 1:
+            raise ValueError('No supported code files extracted')
+        return code_files
 
     def analyze_github_repository(self, url: str, threshold: float = 0.7) -> Dict:
         files = self.download_repo(url)
         if len(files) < 2:
             return {
                 'status': 'insufficient_files',
-                'message': 'Repository needs at least 2 Python files for comparison',
+                'message': 'Repository needs at least 2 supported code files for comparison',
                 'total_files': len(files),
                 'files_found': [f[0] for f in files]
             }
