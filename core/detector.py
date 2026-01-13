@@ -14,6 +14,7 @@ from tqdm import tqdm
 from .ast_tokenizer import ASTTokenizer
 from .tfidf_vectorizer import TFIDFVectorizer
 from .similarity import CosineSimilarityCalculator
+from .preset_config import get_preset_params, validate_preset_params
 
 
 @dataclass
@@ -44,10 +45,10 @@ class DetectionReport:
 
 class PlagiarismDetector:
     def __init__(self, 
-                 similarity_threshold: float = 0.7,
+                 similarity_threshold: float = 0.72,
                  min_tokens: int = 10,
                  min_df: int = 1,
-                 max_df: float = 0.95,
+                 max_df: float = 0.80,
                  normalize_vectors: bool = True):
         """
         Initialize Plagiarism Detector.

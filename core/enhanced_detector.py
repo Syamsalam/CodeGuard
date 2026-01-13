@@ -1,9 +1,10 @@
 import re
-from typing import List, Dict
+from typing import List, Dict, Optional, Any
 # Removed sklearn dependency for portability; implementing lightweight TF-IDF & cosine manually
 from collections import Counter
 import math
 import logging
+from .preset_config import get_settings, get_threshold
 
 logger = logging.getLogger(__name__)
 
@@ -169,3 +170,126 @@ class EnhancedPlagiarismDetector:
                     'details': sim_result
                 })
         return results
+
+    def generate_tfidf_matrix(self, files_data: List[tuple]) -> Dict:
+        """
+        Generate TF-IDF matrix for files.
+        
+        Parameters
+        ----------
+        files_data : List[Tuple[str, str]]
+            List of (filename, code) tuples
+            
+        Returns
+        -------
+        Dict
+            Dictionary containing:
+            - 'feature_names': list of feature names
+            - 'tfidf_matrix': list of lists representing TF-IDF matrix
+            - 'filenames': list of filenames
+        """
+        if not files_data:
+            return {
+                'feature_names': [],
+                'tfidf_matrix': [],
+                'filenames': []
+            }
+        
+        # Extract filenames and tokenize all files
+        filenames = []
+        all_tokens = []
+        
+        for filename, code in files_data:
+            filenames.append(filename)
+            tokens = self.enhanced_tokenize_code(code)
+            all_tokens.append(tokens)
+        
+        # Build vocabulary
+        vocabulary = set()
+        for tokens in all_tokens:
+            vocabulary.update(tokens)
+        
+        feature_names = sorted(list(vocabulary))
+        
+        # Calculate TF-IDF
+        tfidf_matrix = []
+        
+        for tokens in all_tokens:
+            # Term frequency
+            token_count = Counter(tokens)
+            total_tokens = len(tokens)
+            
+            tf_vector = []
+            for feature in feature_names:
+                tf = token_count.get(feature, 0) / max(total_tokens, 1)
+                tf_vector.append(tf)
+            
+            # Calculate IDF and combine with TF
+            tfidf_vector = []
+            for i, feature in enumerate(feature_names):
+                # Document frequency
+                df = sum(1 for doc_tokens in all_tokens if feature in doc_tokens)
+                
+                # IDF calculation
+                if df > 0:
+                    idf = math.log(len(all_tokens) / df)
+                else:
+                    idf = 0
+                
+                tfidf = tf_vector[i] * idf
+                tfidf_vector.append(tfidf)
+            
+            tfidf_matrix.append(tfidf_vector)
+        
+        return {
+            'feature_names': feature_names,
+            'tfidf_matrix': tfidf_matrix,
+            'filenames': filenames
+        }
+
+    def generate_similarity_matrix(self, files_data: List[tuple]) -> Dict:
+        """
+        Generate pairwise similarity matrix for files.
+        
+        Parameters
+        ----------
+        files_data : List[Tuple[str, str]]
+            List of (filename, code) tuples
+            
+        Returns
+        -------
+        Dict
+            Dictionary containing:
+            - 'similarity_matrix': 2D list of similarity scores
+            - 'filenames': list of filenames
+        """
+        if not files_data:
+            return {
+                'similarity_matrix': [],
+                'filenames': []
+            }
+        
+        filenames = [filename for filename, _ in files_data]
+        n = len(files_data)
+        similarity_matrix = []
+        
+        for i in range(n):
+            row = []
+            for j in range(n):
+                if i == j:
+                    row.append(1.0)  # Self-similarity is 1
+                else:
+                    # Calculate similarity between files i and j
+                    _, code_i = files_data[i]
+                    _, code_j = files_data[j]
+                    
+                    sim_result = self.analyze_similarity(code_i, code_j)
+                    similarity = sim_result.get('similarity_score', 0.0)
+                    row.append(float(similarity))
+            
+            similarity_matrix.append(row)
+        
+        return {
+            'similarity_matrix': similarity_matrix,
+            'filenames': filenames
+        }
