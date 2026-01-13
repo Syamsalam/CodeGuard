@@ -1,2 +1,15 @@
 # Ignore Python virtual environment
 .venv/
+
+# Ignore Python cache files  
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Ignore log files
+*.log
+
+# Ignore test directories and temp files
+test_*/
