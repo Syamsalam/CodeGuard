@@ -579,7 +579,7 @@
                             <h5><i class="fas fa-cog"></i> Detection Settings</h5>
                             <div class="mb-3">
                                 <label class="form-label">Ambang Batas: <span id="thresholdValue">70%</span></label>
-                                <input type="range" class="form-range" id="thresholdRange" min="0" max="1" step="0.05" value="0.70" onchange="updateThreshold()" disabled readonly>
+                                <input type="range" class="form-range" id="thresholdRange" min="0" max="1" step="0.05" value="0.80" onchange="updateThreshold()" disabled readonly>
                                 <small class="text-muted">Threshold telah ditetapkan dan tidak dapat diubah</small>
                             </div>
                             <div class="mb-3">
@@ -660,7 +660,7 @@ class MathCalculator:
                     <div class="row mt-3">
                         <div class="col-md-6">
                             <label class="form-label">Ambang Batas: <span id="manualThresholdValue">70%</span></label>
-                            <input type="range" class="form-range" id="manualThresholdRange" min="0" max="1" step="0.05" value="0.70" onchange="updateManualThreshold()" disabled readonly>
+                            <input type="range" class="form-range" id="manualThresholdRange" min="0" max="1" step="0.05" value="0.80" onchange="updateManualThreshold()" disabled readonly>
                             <small class="text-muted">Threshold telah ditetapkan dan tidak dapat diubah</small>
                         </div>
                         <div class="col-md-6">
@@ -687,7 +687,7 @@ class MathCalculator:
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label class="form-label">Ambang Batas: <span id="githubThresholdValue">70%</span></label>
-                            <input type="range" class="form-range" id="githubThresholdRange" min="0" max="1" step="0.05" value="0.70" onchange="updateGithubThreshold()" disabled readonly>
+                            <input type="range" class="form-range" id="githubThresholdRange" min="0" max="1" step="0.05" value="0.80" onchange="updateGithubThreshold()" disabled readonly>
                             <small class="text-muted">Threshold telah ditetapkan dan tidak dapat diubah</small>
                         </div>
                         <div class="col-md-6">
@@ -824,7 +824,7 @@ https://github.com/owner/repoB"></textarea>
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label class="form-label fw-bold">Similarity Threshold: <span class="badge bg-primary" id="crossProjectThresholdValue">70%</span></label>
-                                                <input type="range" class="form-range" id="crossProjectThresholdRange" min="0" max="1" step="0.05" value="0.70" onchange="updateCrossProjectThreshold()" disabled readonly>
+                                                <input type="range" class="form-range" id="crossProjectThresholdRange" min="0" max="1" step="0.05" value="0.80" onchange="updateCrossProjectThreshold()" disabled readonly>
                                                 <div class="d-flex justify-content-between small text-muted">
                                                     <span>0%</span>
                                                     <span>100%</span>
@@ -980,7 +980,7 @@ https://github.com/owner/repoB"></textarea>
                             Klasifikasi & Pelaporan
                         </div>
                         <div class="p-3">
-                            <p><strong>Threshold:</strong> Ambang kesamaan yang dapat dikonfigurasi (default: 0.7)</p>
+                            <p><strong>Threshold:</strong> Ambang kesamaan yang dapat dikonfigurasi (default: 0.8)</p>
                             <p><strong>Classification:</strong> Kesamaan di atas ambang batas ditandai sebagai plagiarisme</p>
                             <p><strong>Output:</strong> Laporan komprehensif dengan visualisasi</p>
                         </div>
@@ -1210,21 +1210,80 @@ https://github.com/owner/repoB"></textarea>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     
     <script>
+        // Global settings
+        let apiSettings = null;
+        
+        // Load default settings from API
+        async function loadApiSettings() {
+            try {
+                const response = await fetch('/analyze/settings');
+                if (response.ok) {
+                    const data = await response.json();
+                    apiSettings = data.settings;
+                    
+                    // Update all threshold ranges with API default
+                    const defaultThreshold = apiSettings.default_threshold || 0.8;
+                    
+                    const thresholdRanges = [
+                        'thresholdRange', 
+                        'manualThresholdRange', 
+                        'githubThresholdRange', 
+                        'crossProjectThresholdRange'
+                    ];
+                    
+                    thresholdRanges.forEach(id => {
+                        const element = document.getElementById(id);
+                        if (element) {
+                            element.value = defaultThreshold;
+                            // Enable the slider now that we have API settings
+                            element.disabled = false;
+                            element.removeAttribute('readonly');
+                        }
+                    });
+                    
+                    // Update displays
+                    updateThreshold();
+                    updateManualThreshold();
+                    updateGithubThreshold();
+                    updateCrossProjectThreshold();
+                    
+                    console.log('API settings loaded:', apiSettings);
+                } else {
+                    console.warn('Failed to load API settings, using defaults');
+                }
+            } catch (error) {
+                console.warn('Error loading API settings:', error);
+            }
+        }
+        
         // Update threshold display
         function updateThreshold() {
             const range = document.getElementById('thresholdRange');
             const display = document.getElementById('thresholdValue');
-            display.textContent = Math.round(parseFloat(range.value) * 100) + '%';
+            if (range && display) {
+                display.textContent = Math.round(parseFloat(range.value) * 100) + '%';
+            }
         }
         function updateManualThreshold() {
             const range = document.getElementById('manualThresholdRange');
             const display = document.getElementById('manualThresholdValue');
-            display.textContent = Math.round(parseFloat(range.value) * 100) + '%';
+            if (range && display) {
+                display.textContent = Math.round(parseFloat(range.value) * 100) + '%';
+            }
         }
         function updateGithubThreshold() {
             const range = document.getElementById('githubThresholdRange');
             const display = document.getElementById('githubThresholdValue');
-            display.textContent = Math.round(parseFloat(range.value) * 100) + '%';
+            if (range && display) {
+                display.textContent = Math.round(parseFloat(range.value) * 100) + '%';
+            }
+        }
+        function updateCrossProjectThreshold() {
+            const range = document.getElementById('crossProjectThresholdRange');
+            const display = document.getElementById('crossProjectThresholdValue');
+            if (range && display) {
+                display.textContent = Math.round(parseFloat(range.value) * 100) + '%';
+            }
         }
 
         // Start demo
@@ -1514,7 +1573,7 @@ https://github.com/owner/repoB"></textarea>
         }
 
         function startPairDetailAnalysis(repoA, repoB){
-            const threshold = document.getElementById('githubThresholdRange')?.value || document.getElementById('thresholdRange')?.value || '0.7';
+            const threshold = document.getElementById('githubThresholdRange')?.value || document.getElementById('thresholdRange')?.value || '0.8';
             const fd = new FormData();
             fd.append('repo_a_url', repoA);
             fd.append('repo_b_url', repoB);
@@ -1573,7 +1632,7 @@ https://github.com/owner/repoB"></textarea>
                 tfidf: data.tfidf ?? undefined,
                 astTokens: data.astTokens ?? data.tokens ?? undefined
             };
-            const threshold = parseFloat(document.getElementById('githubThresholdRange')?.value || '0.7');
+            const threshold = parseFloat(document.getElementById('githubThresholdRange')?.value || '0.8');
             const summaryEl = document.getElementById('pairDetailSummary');
             let hasPlag = mapped.comparisonsDetail.some(p => (p.similarity ?? p.similarity_score ?? 0) >= threshold);
             let summary = '';
@@ -1601,7 +1660,7 @@ https://github.com/owner/repoB"></textarea>
         function analyzeGithubPairDetail(repoAEncoded, repoBEncoded){
             const repoA = decodeURIComponent(repoAEncoded);
             const repoB = decodeURIComponent(repoBEncoded);
-            const threshold = document.getElementById('githubThresholdRange')?.value || '0.7';
+            const threshold = document.getElementById('githubThresholdRange')?.value || '0.8';
             const fd = new FormData();
             fd.append('repo_a_url', repoA);
             fd.append('repo_b_url', repoB);
@@ -1893,7 +1952,7 @@ https://github.com/owner/repoB"></textarea>
         // Show results
         function showResults(data) {
                 // Ambil threshold dari UI sesuai tab aktif
-                let threshold = 0.7;
+                let threshold = 0.8;
                 const activeTab = document.querySelector('.tab-pane.active');
                 if (activeTab && activeTab.id === 'manual') {
                     const manualThresholdInput = document.getElementById('manualThresholdRange');
@@ -2122,7 +2181,7 @@ https://github.com/owner/repoB"></textarea>
         // Show cross-repo account/URLs results in main Results section
         function showResultsCrossRepo(res){
             // Determine threshold
-            let threshold = parseFloat(res.threshold_used ?? document.getElementById('githubThresholdRange')?.value ?? '0.7');
+            let threshold = parseFloat(res.threshold_used ?? document.getElementById('githubThresholdRange')?.value ?? '0.8');
             // Prepare metrics
             const pairs = Array.isArray(res.repoPairs) ? res.repoPairs : [];
             const reposAnalyzed = res.repositoriesAnalyzed || (res.repoNames ? res.repoNames.length : 0);
@@ -2459,7 +2518,7 @@ https://github.com/owner/repoB"></textarea>
             
             html += '<div class="mt-3"><small class="text-muted">';
             html += '<strong>Range:</strong> 0.0 (completely different) to 1.0 (identical)<br>';
-            html += '<strong>Threshold:</strong> ≥0.7 typically indicates potential plagiarism';
+            html += '<strong>Threshold:</strong> ≥0.8 typically indicates potential plagiarism';
             html += '</small></div>';
             html += '</div></div></div>';
             
@@ -2936,7 +2995,7 @@ https://github.com/owner/repoB"></textarea>
             }
             
             // Determine threshold
-            let threshold = parseFloat(results.threshold || document.getElementById('crossProjectThresholdRange')?.value || '0.7');
+            let threshold = parseFloat(results.threshold || document.getElementById('crossProjectThresholdRange')?.value || '0.8');
             
             // Prepare project pairs for analysis
             const projectPairs = [];
@@ -3532,7 +3591,7 @@ https://github.com/owner/repoB"></textarea>
                                             <div class="text-center">
                                                 <h6 class="text-primary mb-1">Cosine Similarity</h6>
                                                 <div class="badge bg-${colorClass} fs-6">${similarity}%</div>
-                                                <small class="d-block text-muted mt-1">Threshold: ${Math.round((results.threshold || 0.7) * 100)}%</small>
+                                                <small class="d-block text-muted mt-1">Threshold: ${Math.round((results.threshold || 0.8) * 100)}%</small>
                                             </div>
                                         </div>
                                     </div>
@@ -4056,6 +4115,11 @@ https://github.com/owner/repoB"></textarea>
             console.log('downloadPairReportByData called with data attributes:', { projectA, projectB, pairIndex });
             downloadPairReport(projectA, projectB, pairIndex);
         }
+        
+        // Load API settings on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadApiSettings();
+        });
     </script>
 </body>
 </html>
