@@ -578,9 +578,8 @@
                         <div class="col-md-6">
                             <h5><i class="fas fa-cog"></i> Detection Settings</h5>
                             <div class="mb-3">
-                                <label class="form-label">Ambang Batas: <span id="thresholdValue">70%</span></label>
-                                <input type="range" class="form-range" id="thresholdRange" min="0" max="1" step="0.05" value="0.80" onchange="updateThreshold()" disabled readonly>
-                                <small class="text-muted">Threshold telah ditetapkan dan tidak dapat diubah</small>
+                                <label class="form-label">Threshold: <span id="thresholdValue" class="badge bg-primary">Loading...</span></label>
+                                <small class="text-muted d-block">Threshold dikonfigurasi dari API settings dan tidak dapat diubah</small>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Minimum Tokens</label>
@@ -659,9 +658,8 @@ class MathCalculator:
                     </div>
                     <div class="row mt-3">
                         <div class="col-md-6">
-                            <label class="form-label">Ambang Batas: <span id="manualThresholdValue">70%</span></label>
-                            <input type="range" class="form-range" id="manualThresholdRange" min="0" max="1" step="0.05" value="0.80" onchange="updateManualThreshold()" disabled readonly>
-                            <small class="text-muted">Threshold telah ditetapkan dan tidak dapat diubah</small>
+                            <label class="form-label">Threshold: <span id="manualThresholdValue" class="badge bg-primary">Loading...</span></label>
+                            <small class="text-muted d-block">Threshold dikonfigurasi dari API settings</small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Minimum Tokens</label>
@@ -686,9 +684,8 @@ class MathCalculator:
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label">Ambang Batas: <span id="githubThresholdValue">70%</span></label>
-                            <input type="range" class="form-range" id="githubThresholdRange" min="0" max="1" step="0.05" value="0.80" onchange="updateGithubThreshold()" disabled readonly>
-                            <small class="text-muted">Threshold telah ditetapkan dan tidak dapat diubah</small>
+                            <label class="form-label">Threshold: <span id="githubThresholdValue" class="badge bg-primary">Loading...</span></label>
+                            <small class="text-muted d-block">Threshold dikonfigurasi dari API settings</small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Minimum Tokens</label>
@@ -823,13 +820,8 @@ https://github.com/owner/repoB"></textarea>
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="mb-3">
-                                                <label class="form-label fw-bold">Similarity Threshold: <span class="badge bg-primary" id="crossProjectThresholdValue">70%</span></label>
-                                                <input type="range" class="form-range" id="crossProjectThresholdRange" min="0" max="1" step="0.05" value="0.80" onchange="updateCrossProjectThreshold()" disabled readonly>
-                                                <div class="d-flex justify-content-between small text-muted">
-                                                    <span>0%</span>
-                                                    <span>100%</span>
-                                                </div>
-                                                <small class="text-muted threshold-disabled-note">Threshold telah ditetapkan dan tidak dapat diubah</small>
+                                                <label class="form-label fw-bold">Threshold: <span class="badge bg-primary" id="crossProjectThresholdValue">Loading...</span></label>
+                                                <small class="text-muted d-block">Dikonfigurasi dari API settings</small>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -1221,69 +1213,54 @@ https://github.com/owner/repoB"></textarea>
                     const data = await response.json();
                     apiSettings = data.settings;
                     
-                    // Update all threshold ranges with API default
+                    // Update all threshold displays with API default
                     const defaultThreshold = apiSettings.default_threshold || 0.8;
+                    const thresholdPercentage = Math.round(defaultThreshold * 100) + '%';
                     
-                    const thresholdRanges = [
-                        'thresholdRange', 
-                        'manualThresholdRange', 
-                        'githubThresholdRange', 
-                        'crossProjectThresholdRange'
+                    // Update threshold displays
+                    const thresholdDisplays = [
+                        'thresholdValue', 
+                        'manualThresholdValue', 
+                        'githubThresholdValue', 
+                        'crossProjectThresholdValue'
                     ];
                     
-                    thresholdRanges.forEach(id => {
+                    thresholdDisplays.forEach(id => {
                         const element = document.getElementById(id);
                         if (element) {
-                            element.value = defaultThreshold;
-                            // Enable the slider now that we have API settings
-                            element.disabled = false;
-                            element.removeAttribute('readonly');
+                            element.textContent = thresholdPercentage;
+                            element.className = 'badge bg-success';
                         }
                     });
-                    
-                    // Update displays
-                    updateThreshold();
-                    updateManualThreshold();
-                    updateGithubThreshold();
-                    updateCrossProjectThreshold();
                     
                     console.log('API settings loaded:', apiSettings);
                 } else {
                     console.warn('Failed to load API settings, using defaults');
+                    // Fallback display
+                    ['thresholdValue', 'manualThresholdValue', 'githubThresholdValue', 'crossProjectThresholdValue'].forEach(id => {
+                        const element = document.getElementById(id);
+                        if (element) {
+                            element.textContent = '80%';
+                            element.className = 'badge bg-warning';
+                        }
+                    });
                 }
             } catch (error) {
                 console.warn('Error loading API settings:', error);
+                // Error fallback
+                ['thresholdValue', 'manualThresholdValue', 'githubThresholdValue', 'crossProjectThresholdValue'].forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.textContent = '80%';
+                        element.className = 'badge bg-danger';
+                    }
+                });
             }
         }
         
-        // Update threshold display
-        function updateThreshold() {
-            const range = document.getElementById('thresholdRange');
-            const display = document.getElementById('thresholdValue');
-            if (range && display) {
-                display.textContent = Math.round(parseFloat(range.value) * 100) + '%';
-            }
-        }
-        function updateManualThreshold() {
-            const range = document.getElementById('manualThresholdRange');
-            const display = document.getElementById('manualThresholdValue');
-            if (range && display) {
-                display.textContent = Math.round(parseFloat(range.value) * 100) + '%';
-            }
-        }
-        function updateGithubThreshold() {
-            const range = document.getElementById('githubThresholdRange');
-            const display = document.getElementById('githubThresholdValue');
-            if (range && display) {
-                display.textContent = Math.round(parseFloat(range.value) * 100) + '%';
-            }
-        }
-        function updateCrossProjectThreshold() {
-            const range = document.getElementById('crossProjectThresholdRange');
-            const display = document.getElementById('crossProjectThresholdValue');
-            if (range && display) {
-                display.textContent = Math.round(parseFloat(range.value) * 100) + '%';
-            }
+        // Get threshold value from API settings
+        function getThresholdValue() {
+            return apiSettings?.default_threshold || 0.8;
         }
 
         // Start demo
@@ -1303,13 +1280,10 @@ https://github.com/owner/repoB"></textarea>
             for (let i = 0; i < files.length; i++) {
                 formData.append('files', files[i]);
             }
-            // Optionally add threshold and minTokens if needed
-            const threshold = document.getElementById('thresholdRange').value;
-            const minTokens = document.getElementById('minTokens').value;
-            formData.append('threshold', threshold);
-            formData.append('min_tokens', minTokens);
-
             fetch('/analyze/compare', {
+                method: 'POST',
+                body: formData
+            })
                 method: 'POST',
                 body: formData
             })
@@ -1346,7 +1320,6 @@ https://github.com/owner/repoB"></textarea>
             const code2 = document.getElementById('code2').value.trim();
             const lang1 = document.getElementById('lang1').value;
             const lang2 = document.getElementById('lang2').value;
-            const threshold = document.getElementById('manualThresholdRange').value;
             const minTokens = document.getElementById('manualMinTokens').value;
             if (!code1 || !code2) {
                 alert('Masukkan kode pada kedua area.');
@@ -1358,7 +1331,6 @@ https://github.com/owner/repoB"></textarea>
                 code2: code2,
                 lang1: lang1,
                 lang2: lang2,
-                threshold: threshold,
                 min_tokens: minTokens
             };
             fetch('/analyze/manual', {
@@ -1389,11 +1361,9 @@ https://github.com/owner/repoB"></textarea>
                 alert('URL harus diawali dengan https://github.com/');
                 return;
             }
-            const threshold = document.getElementById('githubThresholdRange').value;
             const minTokens = document.getElementById('githubMinTokens').value;
             const fd = new FormData();
             fd.append('github_url', url);
-            fd.append('threshold', threshold);
             fd.append('min_tokens', minTokens);
             const skipMatrices = document.getElementById('skipMatrices');
             if (skipMatrices && skipMatrices.checked) {
@@ -1420,7 +1390,6 @@ https://github.com/owner/repoB"></textarea>
         function analyzeGithubAccount() {
             const username = document.getElementById('githubUsername').value.trim();
             if (!username) { alert('Masukkan username/organisasi GitHub.'); return; }
-            const threshold = document.getElementById('githubThresholdRange').value;
             const includeForks = document.getElementById('includeForks').checked;
             const maxReposEl = document.getElementById('maxRepos');
             // Allow larger accounts; cap at 200 for safety
@@ -1428,7 +1397,6 @@ https://github.com/owner/repoB"></textarea>
             const token = (document.getElementById('ghToken').value || '').trim();
             const fd = new FormData();
             fd.append('username', username);
-            fd.append('threshold', threshold);
             fd.append('include_forks', includeForks ? 'true' : 'false');
             fd.append('max_repos', String(maxRepos));
             fd.append('skip_matrices', 'true');
@@ -1573,11 +1541,9 @@ https://github.com/owner/repoB"></textarea>
         }
 
         function startPairDetailAnalysis(repoA, repoB){
-            const threshold = document.getElementById('githubThresholdRange')?.value || document.getElementById('thresholdRange')?.value || '0.8';
             const fd = new FormData();
             fd.append('repo_a_url', repoA);
             fd.append('repo_b_url', repoB);
-            fd.append('threshold', threshold);
             fd.append('preset', 'strict');
             fd.append('skip_matrices', 'false');
             fetch('/analyze/github/pair_detail', { method: 'POST', body: fd })
@@ -1632,7 +1598,7 @@ https://github.com/owner/repoB"></textarea>
                 tfidf: data.tfidf ?? undefined,
                 astTokens: data.astTokens ?? data.tokens ?? undefined
             };
-            const threshold = parseFloat(document.getElementById('githubThresholdRange')?.value || '0.8');
+            const threshold = getThresholdValue();
             const summaryEl = document.getElementById('pairDetailSummary');
             let hasPlag = mapped.comparisonsDetail.some(p => (p.similarity ?? p.similarity_score ?? 0) >= threshold);
             let summary = '';
@@ -1660,11 +1626,9 @@ https://github.com/owner/repoB"></textarea>
         function analyzeGithubPairDetail(repoAEncoded, repoBEncoded){
             const repoA = decodeURIComponent(repoAEncoded);
             const repoB = decodeURIComponent(repoBEncoded);
-            const threshold = document.getElementById('githubThresholdRange')?.value || '0.8';
             const fd = new FormData();
             fd.append('repo_a_url', repoA);
             fd.append('repo_b_url', repoB);
-            fd.append('threshold', threshold);
             fd.append('preset', 'strict');
             fd.append('skip_matrices', 'false');
             const statusArea = document.getElementById('githubPairStatusArea') || (function(){
@@ -1724,10 +1688,8 @@ https://github.com/owner/repoB"></textarea>
         function analyzeGithubCrossUrls() {
             const urlsStr = document.getElementById('githubRepoUrls').value.trim();
             if (!urlsStr) { alert('Masukkan minimal 2 URL.'); return; }
-            const threshold = document.getElementById('githubThresholdRange').value;
             const fd = new FormData();
             fd.append('repo_urls', urlsStr);
-            fd.append('threshold', threshold);
             fd.append('skip_matrices', 'true');
             const statusArea = document.getElementById('githubCrossStatusArea');
             statusArea.innerHTML = `<div class='alert alert-info'><div class='d-flex align-items-center'><div class='spinner-border spinner-border-sm me-2'></div><div><strong>Memulai analisis cross-repo (URLs)...</strong></div></div></div>`;
@@ -1951,19 +1913,9 @@ https://github.com/owner/repoB"></textarea>
 
         // Show results
         function showResults(data) {
-                // Ambil threshold dari UI sesuai tab aktif
-                let threshold = 0.8;
-                const activeTab = document.querySelector('.tab-pane.active');
-                if (activeTab && activeTab.id === 'manual') {
-                    const manualThresholdInput = document.getElementById('manualThresholdRange');
-                    if (manualThresholdInput) threshold = parseFloat(manualThresholdInput.value);
-                } else if (activeTab && activeTab.id === 'github') {
-                    const githubThresholdInput = document.getElementById('githubThresholdRange');
-                    if (githubThresholdInput) threshold = parseFloat(githubThresholdInput.value);
-                } else {
-                    const thresholdInput = document.getElementById('thresholdRange');
-                    if (thresholdInput) threshold = parseFloat(thresholdInput.value);
-                }
+                // Get threshold from API settings
+                const threshold = getThresholdValue();
+                
                 // Normalisasi kunci dari backend (multi-file) ke struktur frontend lama
                 const mapped = {
                     filesCount: data.filesCount ?? data.total_files ?? data.totalFiles ?? 0,
@@ -2180,8 +2132,8 @@ https://github.com/owner/repoB"></textarea>
 
         // Show cross-repo account/URLs results in main Results section
         function showResultsCrossRepo(res){
-            // Determine threshold
-            let threshold = parseFloat(res.threshold_used ?? document.getElementById('githubThresholdRange')?.value ?? '0.8');
+            // Determine threshold  
+            let threshold = parseFloat(res.threshold_used ?? getThresholdValue());
             // Prepare metrics
             const pairs = Array.isArray(res.repoPairs) ? res.repoPairs : [];
             const reposAnalyzed = res.repositoriesAnalyzed || (res.repoNames ? res.repoNames.length : 0);
@@ -2656,12 +2608,6 @@ https://github.com/owner/repoB"></textarea>
         // Cross-Project Analysis Functions
         let crossProjectData = [];
         
-        function updateCrossProjectThreshold() {
-            const slider = document.getElementById('crossProjectThresholdRange');
-            const display = document.getElementById('crossProjectThresholdValue');
-            display.textContent = Math.round(slider.value * 100) + '%';
-        }
-        
         function handleFolderDrop(event) {
             event.preventDefault();
             const uploadZone = event.currentTarget;
@@ -2829,7 +2775,6 @@ https://github.com/owner/repoB"></textarea>
                 // Prepare files for analysis
                 const projectList = Object.values(crossProjectData);
                 const totalProjects = projectList.length;
-                const threshold = document.getElementById('crossProjectThresholdRange').value;
                 const minTokens = document.getElementById('crossProjectMinTokens').value;
                 
                 updateProgress(`Analyzing ${totalProjects} projects...`);
@@ -2849,7 +2794,6 @@ https://github.com/owner/repoB"></textarea>
                 });
                 
                 // Add analysis parameters
-                formData.append('threshold', threshold);
                 formData.append('min_tokens', minTokens);
                 formData.append('analysis_type', 'cross_project');
                 formData.append('project_count', totalProjects);
@@ -2995,7 +2939,7 @@ https://github.com/owner/repoB"></textarea>
             }
             
             // Determine threshold
-            let threshold = parseFloat(results.threshold || document.getElementById('crossProjectThresholdRange')?.value || '0.8');
+            let threshold = parseFloat(results.threshold || getThresholdValue());
             
             // Prepare project pairs for analysis
             const projectPairs = [];
